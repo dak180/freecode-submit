@@ -1,5 +1,5 @@
 Name: freshmeat-submit
-Version: 1.3
+Version: 1.4
 Release: 1
 URL: http://www.catb.org/~esr/freshmeat-submit/
 Source0: %{name}-%{version}.tar.gz
@@ -24,10 +24,10 @@ echo "No build step is required."
 
 %install
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
-mkdir -p "$RPM_BUILD_ROOT"/usr/bin
-mkdir -p "$RPM_BUILD_ROOT"/usr/share/man/man1/
-cp freshmeat-submit "$RPM_BUILD_ROOT"/usr/bin
-cp freshmeat-submit.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
+mkdir -p "$RPM_BUILD_ROOT"%{_bindir}
+mkdir -p "$RPM_BUILD_ROOT"%{_mandir}/man1/
+cp freshmeat-submit "$RPM_BUILD_ROOT"%{_bindir}
+cp freshmeat-submit.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 
 %clean
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
@@ -38,6 +38,9 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
 %{_bindir}/freshmeat-submit
 
 %changelog
+* Wed Dec 31 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.4-1
+- Fix bug in perocessing of text foci indicators.
+
 * Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.3-1
 - Fix typo affecting the RPM field.
 

@@ -215,7 +215,7 @@ class FreshmeatMetadataFactory:
                 session = FreshmeatSession(verbose=int(verbose))
             freshmeat_foci = session.session.fetch_available_release_foci()
             if focus in freshmeat_foci:
-                data["release_focus"] = freshmeat_foci[val]
+                data["release_focus"] = freshmeat_foci[focus]
             else:
                 raise FreshmeatSessionException("focus type error: needs one of" + `freshmeat_foci.keys()`)
         # Validate License field if present
