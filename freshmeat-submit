@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# meathook -- script transactions with the Freshmeat server
+# freshmeat-submit -- script transactions with the Freshmeat server
 
 # This is how we sanity-check against the XML-RPC API version.
 required_major = "0"
@@ -9,7 +9,7 @@ required_minor = "2"
 import sys
 
 def error(m):
-    sys.stderr.write("meathook: %s\n" % m)
+    sys.stderr.write("freshmeat-submit: %s\n" % m)
     sys.stderr.flush()
     sys.exit(1)
 
@@ -206,10 +206,10 @@ if __name__ == "__main__":
             # Log out
             session.logout()
     except FreshmeatSessionException, e:
-        print >>sys.stderr,"meathook:", e.msg
+        print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
     except xmlrpclib.Fault, f:
-        print >>sys.stderr,"meathook: %d %s" %  (f.faultCode, f.faultString)
+        print >>sys.stderr,"freshmeat-submit: %d %s" %  (f.faultCode, f.faultString)
         sys.exit(1)
 
 # end
