@@ -39,7 +39,7 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 
 %changelog
 * Wed Dec 31 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.4-1
-- Fix bug in perocessing of text foci indicators.
+- Fix bug in processing of text foci indicators.
 
 * Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.3-1
 - Fix typo affecting the RPM field.
