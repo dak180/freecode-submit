@@ -177,7 +177,7 @@ class FreshmeatMetadataFactory:
         # they override what's on stdin.
         data['verbose'] = False
         for (key, value) in options.__dict__.items():
-            if key not in ('read', 'verbose') and value != None:
+            if key != 'read' and value != None:
                 data[key] = value
         return data
 
