@@ -3,8 +3,8 @@
 # freshmeat-submit -- script transactions with the Freshmeat server
 
 # This is how we sanity-check against the XML-RPC API version.
-required_major = "0"
-required_minor = "2"
+required_major = "1"
+required_minor = "0"
 
 import sys
 
@@ -24,7 +24,7 @@ class FreshmeatSessionException:
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat session."
-    freshmeat_xmlrpc = "http://dev.freshmeat.net/xmlrpc/"
+    freshmeat_xmlrpc = "http://freshmeat.net/xmlrpc/"
 
     def __init__(self, login=None, password=None, verbose=0):
         "Initialize an XML-RPC session to Freshmeat by logging in."
