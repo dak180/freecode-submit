@@ -71,7 +71,7 @@ class FreshmeatSession:
         "Add a new release to the current project."
         response = self.session.add_release(data)
         if response != "Release submission successful":
-            raise FreshmeatSessionException(resonse)
+            raise FreshmeatSessionException(response)
 
     def withdraw_release(self, release):
         response = self.session.withdraw_release(data)
