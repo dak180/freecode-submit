@@ -22,9 +22,9 @@ class FreshmeatSession:
     "Encapsulate the state of a Freshmeat session."
     freshmeat_xmlrpc = "http://dev.freshmeat.net/xmlrpc/"
 
-    def __init__(self, login=None, password=None, debug=0):
+    def __init__(self, login=None, password=None, verbose=0):
         "Initialize an XML-RPC session to Freshmeat by logging in."
-        self.debug = debug
+        self.verbose = verbose
         # If user didn't supply credentials, fetch from ~/.netrc
         if not login:
             try:
@@ -41,21 +41,21 @@ class FreshmeatSession:
             login, account, password = ret
         # Open xml-rpc connection to Freshmeat
         self.session = xmlrpclib.Server(FreshmeatSession.freshmeat_xmlrpc,
-                                     verbose=debug)
+                                     verbose=verbose)
         # Log in to Freshmeat
         response = self.session.login( \
             {"username":login, "password":password})
         self.sid = response['SID']
         self.lifetime = response['Lifetime']
-        if self.debug:
+        if self.verbose:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
     def get_branch_list(self, name):
         "Get the branch list for the current project."
-        if self.debug:
+        if self.verbose:
             print "About to look up project"
         self.branch_list = self.session.fetch_branch_list({'SID':self.sid,'project_name':name})
-        if self.debug:
+        if self.verbose:
             print "Project branch list is:", self.branch_list
 
     def add_release(self, data):
@@ -126,7 +126,10 @@ class FreshmeatMetadataFactory:
         self.argument_parser.add_option('-n', '--no-stdin', dest='read',
                           default=True, action='store_false',
                           help='Suppress reading fields from stdin.')
-        self.argument_parser.add_option('-V', '--verbose', dest='debug',
+        self.argument_parser.add_option('-N', '--noemit', dest='noemit',
+                          default=False, action='store_true',
+                          help='Suppress reading fields from stdin.')
+        self.argument_parser.add_option('-V', '--verbose', dest='verbose',
                           default=False, action='store_true',
                           help='Enable verbose debugging.')
         
@@ -149,7 +152,7 @@ class FreshmeatMetadataFactory:
                 data['changes'] = message.get_payload() 
         # Merge in options from the command line;
         # they override what's on stdin.
-        data['debug'] = False
+        data['verbose'] = False
         for (key, value) in options.__dict__.items():
             if key != 'read' and value != None:
                 data[key] = value
@@ -168,25 +171,34 @@ if __name__ == "__main__":
         factory = FreshmeatMetadataFactory()
         data = factory.getMetadata(sys.stdin)
         # Some switches shouldn't be passed to the server
-        debug = data['debug']; del data['debug']
+        verbose = data['verbose']; del data['verbose']
         delete = data['delete']; del data['delete']
-        # Establish session
-        session = FreshmeatSession(debug=int(debug))
-        # OK, now actually add the release.
-        data['SID'] = session.sid
-        if delete:
-            session.withdraw_release(data)
-        else:
-            session.add_release(data)
-        # Log out
-        session.logout()
+        noemit = data['noemit']; del data['noemit']
+        # Maybe we just want to sanity-check the send
+        if noemit or verbose:
+            for (field, shortopt, key) in freshmeat_field_map:
+                if key in data and key != 'changes':
+                    print "%s: %s" % (field, data[key])
+            if 'changes' in data:
+                sys.stdout.write("\n" + data['changes'])
+        # Time to ship the update.
+        if not noemit:
+            # Establish session
+            session = FreshmeatSession(verbose=int(verbose))
+            # OK, now actually add the release.
+            data['SID'] = session.sid
+            if delete:
+                session.withdraw_release(data)
+            else:
+                session.add_release(data)
+            # Log out
+            session.logout()
     except FreshmeatSessionException, e:
         print "meathook:", e.msg
         sys.exit(1)
     except xmlrpclib.Fault, f:
         print "meathook: %d %s" %  (f.faultCode, f.faultString)
         sys.exit(1)
-
 
 # end
 
