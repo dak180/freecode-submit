@@ -16,7 +16,7 @@ def error(m):
 if sys.version[:6] < '2.2.0':
     error("You must upgrade to Python 2.2.0 or better to use this code.")
 
-import xmlrpclib, netrc, email.Parser, optparse
+import xmlrpclib, netrc, email.Parser, optparse, commands
 
 class FreshmeatSessionException:
     def __init__(self, msg):
@@ -118,6 +118,43 @@ freshmeat_focus_types = {
     }
 focus_error = "Release-Focus must be one of:\n  " + "\n  ".join(map(lambda x: x.capitalize(), freshmeat_focus_types))  + "."
 
+def get_rpm_field(fld, rpm):
+    cmd = "rpm --queryformat='%%{%s}' -qp %s" % (fld, rpm)
+    (status, output) = commands.getstatusoutput(cmd)
+    if status != 0:
+        raise ValueError
+    return output
+
+def crack_rpm(rpm, dict):
+    "Extract freshmeat metadata from an RPM."
+    try:
+        # Some fields can be copied literally if present.
+        if not "project_name" in dict:
+            dict["project_name"] = get_rpm_field("name", rpm)
+        if not "version" in dict:
+            dict["version"] = get_rpm_field("version", rpm)
+        if not "license" in dict:
+            dict["license"] = get_rpm_field("license", rpm)
+        if not "url_homepage" in dict:
+            dict["url_homepage"] = get_rpm_field("url", rpm)
+        if not "changes" in dict:
+            # Querying gets you the first entry, apparently
+            # blank-line-delimited.
+            changes = get_rpm_field("changelogtext", rpm)
+            # There's a 600-char-limit on Freshmeat changes fields.
+            changes = changes[:599:] + "\n"
+            dict["changes"] = changes 
+        # RPMs have a source field; figure out which Freshmeat field it maps to
+        source = get_rpm_field("source", rpm)
+        if source.endswith(".tar.gz") or source.endswith(".tgz"):
+            if "url_tgz" not in dict:
+                dict["url_tgz"] = source
+        if source.endswith(".tar.bz2"):
+            if "url_bz2" not in dict:
+                dict["url_bz2"] = source
+    except ValueError:
+        pass
+
 class FreshmeatMetadataFactory:
     "Factory class for producing Metadata records"
 
@@ -154,12 +191,17 @@ class FreshmeatMetadataFactory:
         "Make a Metadata object."
         data = {}
         (options, args) = self.argument_parser.parse_args()
+        # First. stuff fropm stdin if present
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 data.update({self.header_to_field(key) : value})
             if not 'changes' in data:
-                data['changes'] = message.get_payload() 
+                data['changes'] = message.get_payload()
+        # Then stuff from rpms if present.
+        for file in args:
+            if file.endswith(".rpm"):
+                crack_rpm(file, data)
         # Merge in options from the command line;
         # they override what's on stdin.
         data['verbose'] = False
