@@ -168,7 +168,9 @@ class FreshmeatMetadataFactory:
         # Validate and convert the Release-Focus field
         if "release_focus" in data:
             val = data["release_focus"].lower()
-            if val in freshmeat_focus_types:
+            if val in '123456789':
+                data["release_focus"] = int(val)
+            elif val in freshmeat_focus_types:
                 data["release_focus"] = freshmeat_focus_types[val]
             else:
                 raise FreshmeatSessionException(focus_error)
@@ -203,10 +205,10 @@ if __name__ == "__main__":
             # Log out
             session.logout()
     except FreshmeatSessionException, e:
-        print "meathook:", e.msg
+        print >>sys.stderr,"meathook:", e.msg
         sys.exit(1)
     except xmlrpclib.Fault, f:
-        print "meathook: %d %s" %  (f.faultCode, f.faultString)
+        print >>sys.stderr,"meathook: %d %s" %  (f.faultCode, f.faultString)
         sys.exit(1)
 
 # end
