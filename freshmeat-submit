@@ -89,7 +89,7 @@ freshmeat_field_map = (
     ("Changes",          "c", "changes"),
     ("Release-Focus",    "r", "release_focus"),
     ("Hide",             "x", "hide_from_frontpage"),
-    ("License",          "l", "LICENSE"),
+    ("License",          "l", "license"),
     ("Home-Page-URL",    "H", "url_homepage"),
     ("Gzipped-Tar-URL",  "G", "url_tgz"),
     ("Bzipped-Tar-URL",  "B", "url_bz2"),
@@ -134,8 +134,9 @@ def crack_rpm(rpm, dict):
             dict["project_name"] = get_rpm_field("name", rpm)
         if not "version" in dict:
             dict["version"] = get_rpm_field("version", rpm)
-        if not "license" in dict:
-            dict["license"] = get_rpm_field("license", rpm)
+        # This doesn't work.  The values don't map over.
+        #if not "license" in dict:
+        #    dict["license"] = get_rpm_field("license", rpm)
         if not "url_homepage" in dict:
             dict["url_homepage"] = get_rpm_field("url", rpm)
         if not "changes" in dict:
