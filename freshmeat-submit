@@ -54,10 +54,11 @@ class FreshmeatSession:
         "Set the current project."
         if self.debug:
             print "About to look up project"
-        self.pid = self.session.lookup_project_id({'SID':self.sid,'projectname_short':name})
+        response = self.session.lookup_project_id({'SID':self.sid,'projectname_short':name})
+        self.pid = response['project_id']
         if self.debug:
             print "Project ID is:", self.pid
-        self.branch_list = self.session.fetch_branch_list(self.sid, self.pid)
+        self.branch_list = self.session.fetch_branch_list({'SID':self.sid,'project_id':self.pid})
         if self.debug:
             print "Project branch list is:", self.branch_list
 
