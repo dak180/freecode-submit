@@ -210,7 +210,7 @@ class FreshmeatMetadataFactory:
         "Validate a metadata object using the Freshmeat server"
         # Validate Release-Focus field if present
         focus = data.get('release_focus')
-        if focus and not focus.isdigit():
+        if focus and type(focus) != type(0):
             if not session:
                 session = FreshmeatSession(verbose=int(verbose))
             freshmeat_foci = session.session.fetch_available_release_foci()
