@@ -41,7 +41,7 @@ class FreshmeatSession:
             login, account, password = ret
         # Open xml-rpc connection to Freshmeat
         self.session = xmlrpclib.Server(FreshmeatSession.freshmeat_xmlrpc,
-                                     verbose=1)
+                                     verbose=debug)
         # Log in to Freshmeat
         response = self.session.login( \
             {"username":login, "password":password})
@@ -54,7 +54,7 @@ class FreshmeatSession:
         "Set the current project."
         if self.debug:
             print "About to look up project"
-        self.pid = self.session.lookup_project_id({'SID':self.sid,'name':name})
+        self.pid = self.session.lookup_project_id({'SID':self.sid,'projectname_short':name})
         if self.debug:
             print "Project ID is:", self.pid
         self.branch_list = self.session.fetch_branch_list(self.sid, self.pid)
@@ -150,7 +150,7 @@ class FreshmeatMetadataFactory:
                           default=True, action='store_false',
                           help='Suppress reading fields from stdin.')
         self.argument_parser.add_option('-V', '--verbose', dest='debug',
-                          default=True, action='store_false',
+                          default=False, action='store_true',
                           help='Enable verbose debugging.')
         
     def header_to_field(self, hdr):
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     data = factory.getMetadata(sys.stdin)
     try:
         # Establish session
-        session = FreshmeatSession(data['debug'])
+        session = FreshmeatSession(debug=int(data['debug']))
         # Connect with the appropriate project
         session.set_project(data['project'])
     except FreshmeatSessionException, e:
