@@ -58,16 +58,16 @@ class FreshmeatSession:
         if self.debug:
             print "Project branch list is:", self.branch_list
 
-    def add_release(self, release_info, branch=None):
+    def add_release(self, data):
         "Add a new release to the current project."
-        self.session.add_release(self.sid, self.pid, branch, dir(release_info))
+        self.session.add_release(data)
 
     def withdraw_release(self, release):
         pass
   
     def logout(self):
         "End the session."
-        return self.session.logout(self.sid)
+        return self.session.logout({"SID":self.sid})
 
 freshmeat_field_map = (
     ("Project",          "p", "project_name"),
@@ -198,8 +198,11 @@ if __name__ == "__main__":
         # First, gather update data from stdin and command-line switches
         factory = FreshmeatMetadataFactory()
         data = factory.getMetadata(sys.stdin)
+        # Debug switch shouldn't be passed to the server
+        debug = data['debug']
+        del data['debug']
         # Establish session
-        session = FreshmeatSession(debug=int(data['debug']))
+        session = FreshmeatSession(debug=int(debug))
         # Grab the branch list and use it to validate the branch:
         session.get_branch_list(data['project_name'])
         if not 'branch_name' in data and len(session.branch_list) == 1:
@@ -208,7 +211,11 @@ if __name__ == "__main__":
             raise FreshmeatSessionException("branch specification required")
         elif data['branch_name'] not in session.branch_list:
             raise FreshmeatSessionException("no such branch")
-
+        # OK, now actually add the release.
+        data['SID'] = session.sid
+        #session.add_release(data)
+        # Log out
+        session.logout()
     except FreshmeatSessionException, e:
         print "meathook:", e.msg
         sys.exit(1)
