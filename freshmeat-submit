@@ -67,9 +67,9 @@ class FreshmeatSession:
         if self.verbose:
             print "Project branch list is:", self.branch_list
 
-    def add_release(self, data):
+    def publish_release(self, data):
         "Add a new release to the current project."
-        response = self.session.add_release(data)
+        response = self.session.publish_release(data)
         if response != "Release submission successful":
             raise FreshmeatSessionException(response)
 
@@ -201,7 +201,7 @@ if __name__ == "__main__":
             if delete:
                 session.withdraw_release(data)
             else:
-                session.add_release(data)
+                session.publish_release(data)
             # Log out
             session.logout()
     except FreshmeatSessionException, e:
