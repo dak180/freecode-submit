@@ -141,8 +141,10 @@ def crack_rpm(rpm, dict):
             # Querying gets you the first entry, apparently
             # blank-line-delimited.
             changes = get_rpm_field("changelogtext", rpm)
+            # Canonicalize, stripping leading spaces.
+            changes = map(lambda x: x.strip(), changes.split('\n'))
             # There's a 600-char-limit on Freshmeat changes fields.
-            changes = changes[:599:] + "\n"
+            changes = "\n".join(changes)[:599] + "\n"
             dict["changes"] = changes 
         # RPMs have a source field; figure out which Freshmeat field it maps to
         source = get_rpm_field("source", rpm)
@@ -191,17 +193,17 @@ class FreshmeatMetadataFactory:
         "Make a Metadata object."
         data = {}
         (options, args) = self.argument_parser.parse_args()
-        # First. stuff fropm stdin if present
+        # First stuff from rpms if present.
+        for file in args:
+            if file.endswith(".rpm"):
+                crack_rpm(file, data)
+        # Second. stuff fropm stdin if present
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 data.update({self.header_to_field(key) : value})
             if not 'changes' in data:
                 data['changes'] = message.get_payload()
-        # Then stuff from rpms if present.
-        for file in args:
-            if file.endswith(".rpm"):
-                crack_rpm(file, data)
         # Merge in options from the command line;
         # they override what's on stdin.
         data['verbose'] = False
