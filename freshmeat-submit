@@ -188,7 +188,7 @@ class FreshmeatMetadataFactory:
         if "release_focus" in data:
             val = data["release_focus"].lower()
             if val in freshmeat_focus_types:
-                data["release_focus"] = val
+                data["release_focus"] = freshmeat_focus_types[val]
             else:
                 raise FreshmeatSessionException(focus_error)
         return data
