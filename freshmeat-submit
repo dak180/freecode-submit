@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+import sys
+
+def error(m):
+    sys.stderr.write("meathook: %s\n" % m)
+    sys.stderr.flush()
+    sys.exit(1)
+
+if sys.version[:6] < '2.2.0':
+    error("you must upgrade to Python 2.2.0 or better to use this script.")
+
+import xmlrpclib, netrc
+
+class FreshmeatSessionException:
+    def __init__(self, msg):
+        self.msg = msg
+
+class FreshmeatSession:
+    "Encapsulate the state of a Freshmeat session."
+    freshmeat_xmlrpc = "http://dev.freshmeat.net/xmlrpc/"
+
+    def __init__(self, login=None, password=None, verbose=0):
+        "Initialize an XML-RPC session to Freshmeat by loggin in."
+        # If user didn't supply credentials, fetch from ~/.netrc
+        if not login:
+            try:
+                credentials = netrc.netrc()
+            except netrc.NetrcParseError, e:
+                raise FreshmeatSessionException("ill-formed .netrc: %s:%s %s" \
+                                               % (e.filename, e.lineno, e.msg))
+            except IOError, e:
+                raise FreshmeatSessionException(("missing .netrc file %s" % \
+                                                 str(e).split()[-1]))
+            ret = credentials.authenticators("freshmeat")
+            if not ret:
+                raise FreshmeatSessionException("no credentials for Freshmeat")
+            login, account, password = ret
+        # Open xml-rpc connection to Freshmeat
+        self.session = xmlrpclib.Server(FreshmeatSession.freshmeat_xmlrpc,
+                                     verbose=verbose)
+        # Log in to the service
+        self.sid = self.session.login(login, password)
+  
+    def logout(self):
+        return self.session.logout(self.sid)
+
+
+if __name__ == "__main__":
+    try:
+        session = FreshmeatSession()
+    except FreshmeatSessionException, e:
+        print "meathook:", e.msg
+        sys.exit(1)
+    except xmlrpclib.Fault, f:
+        print "meathook: %d, %s" %  (f.faultCode, f.faultString)
+        sys.exit(1)
+
+# end
+
