@@ -50,8 +50,8 @@ class FreshmeatSession:
         if self.debug:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
-    def set_project(self, name):
-        "Set the current project."
+    def get_branch_list(self, name):
+        "Get the branch list for the current project."
         if self.debug:
             print "About to look up project"
         response = self.session.lookup_project_id({'SID':self.sid,'projectname_short':name})
@@ -78,8 +78,8 @@ class FreshmeatSession:
         return self.session.logout(self.sid)
 
 freshmeat_field_map = (
-    ("Project",          "p", "project"),
-    ("Branch",           "b", "project"),
+    ("Project",          "p", "project_id"),
+    ("Branch",           "b", "branch_id"),
     ("Version",          "v", "version"),
     ("Changes",          "c", "changes"),
     ("Release-Focus",    "r", "release_focus"),
@@ -206,9 +206,9 @@ if __name__ == "__main__":
         data = factory.getMetadata(sys.stdin)
         # Establish session
         session = FreshmeatSession(debug=int(data['debug']))
-        # Connect with the appropriate project
-        session.set_project(data['project'])
-        
+        # Grab the branch list
+        session.get_branch_list(data['project'])
+        if "
 
     except FreshmeatSessionException, e:
         print "meathook:", e.msg
