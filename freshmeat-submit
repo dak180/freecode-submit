@@ -99,6 +99,19 @@ freshmeat_field_map = (
     ("Demo-URL",	 "E", "url_demo"),
     )
 
+freshmeat_focus_types = {
+    "initial freshmeat announcement":1,
+    "documentation":2,
+    "code cleanup":3,
+    "minor feature enhancements":4,
+    "major feature enhancements":5,
+    "minor bugfixes":6,
+    "major bugfixes":7,
+    "minor security fixes":8,
+    "major security fixes":9,
+    }
+focus_error = "Release-Focus must be one of:\n  " + "\n  ".join(map(lambda x: x.capitalize(), freshmeat_focus_types))  + "."
+
 class FreshmeatMetadata:
     "Complete release information for a project/branch pair."
     # Member names are identical to the XML-RPC structure members
@@ -155,12 +168,11 @@ class FreshmeatMetadataFactory:
                           help='Enable verbose debugging.')
         
     def header_to_field(self, hdr):
-        hdr = hdr.lower().replace("-", "_")
-        for (alias, shortopt, name) in freshmeat_field_map:
-            if hdr == alias.lower().replace("-", "_"):
-                hdr = name
-                break
-        return hdr
+        lhdr = hdr.lower().replace("-", "_")
+        for (alias, shortopt, field) in freshmeat_field_map:
+            if lhdr == alias.lower().replace("-", "_"):
+                return field
+        raise FreshmeatSessionException("Illegal field name %s" % hdr)
 
     def getMetadata(self, stream):
         "Make a Metadata object."
@@ -172,24 +184,32 @@ class FreshmeatMetadataFactory:
                 data.update({self.header_to_field(key) : value})
             if not 'comment' in data:
                 data['comment'] = message.get_payload() 
-
         # Merge in options from the command line;
         # they override what's on stdin.
         data['debug'] = False
         for (key, value) in options.__dict__.items():
             if key != 'read' and value != None:
                 data[key] = value
+        # Validate and convert the Release-Focus field
+        if "release_focus" in data:
+            val = data["release_focus"].lower()
+            if val in freshmeat_focus_types:
+                data["release_focus"] = val
+            else:
+                raise FreshmeatSessionException(focus_error)
         return data
 
 if __name__ == "__main__":
-    # First, gather update data from stdin and command-line switches
-    factory = FreshmeatMetadataFactory()
-    data = factory.getMetadata(sys.stdin)
     try:
+        # First, gather update data from stdin and command-line switches
+        factory = FreshmeatMetadataFactory()
+        data = factory.getMetadata(sys.stdin)
         # Establish session
         session = FreshmeatSession(debug=int(data['debug']))
         # Connect with the appropriate project
         session.set_project(data['project'])
+        
+
     except FreshmeatSessionException, e:
         print "meathook:", e.msg
         sys.exit(1)
