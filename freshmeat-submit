@@ -4,7 +4,7 @@
 
 # This is how we sanity-check against the XML-RPC API version.
 required_major = "1"
-required_minor = "0"
+required_minor = "02"
 
 import sys
 
@@ -106,19 +106,6 @@ freshmeat_field_map = (
     ("Demo-URL",	 "E", "url_demo"),
     )
 
-freshmeat_focus_types = {
-    "initial freshmeat announcement":1,
-    "documentation":2,
-    "code cleanup":3,
-    "minor feature enhancements":4,
-    "major feature enhancements":5,
-    "minor bugfixes":6,
-    "major bugfixes":7,
-    "minor security fixes":8,
-    "major security fixes":9,
-    }
-focus_error = "Release-Focus must be one of:\n  " + "\n  ".join(map(lambda x: x.capitalize(), freshmeat_focus_types))  + "."
-
 def get_rpm_field(fld, rpm):
     cmd = "rpm --queryformat='%%{%s}' -qp %s" % (fld, rpm)
     (status, output) = commands.getstatusoutput(cmd)
@@ -212,19 +199,40 @@ class FreshmeatMetadataFactory:
         for (key, value) in options.__dict__.items():
             if key != 'read' and value != None:
                 data[key] = value
-        # Validate and convert the Release-Focus field
+        # Release-Focus field may have to be validated later.
         if "release_focus" in data:
             val = data["release_focus"].lower()
             if val in '123456789':
                 data["release_focus"] = int(val)
-            elif val in freshmeat_focus_types:
-                data["release_focus"] = freshmeat_focus_types[val]
-            else:
-                raise FreshmeatSessionException(focus_error)
         return data
+
+    def validate(self, session, verbose="1"):
+        "Validate a metadata object using the Freshmeat server"
+        # Validate Release-Focus field if present
+        focus = data.get('release_focus')
+        if focus and not focus.isdigit():
+            if not session:
+                session = FreshmeatSession(verbose=int(verbose))
+            freshmeat_foci = session.session.fetch_available_release_foci()
+            if focus in freshmeat_foci:
+                data["release_focus"] = freshmeat_foci[val]
+            else:
+                raise FreshmeatSessionException("focus type error: needs one of" + `freshmeat_foci.keys()`)
+        # Validate License field if present
+        license = data.get('license')
+        if license:
+            if not session:
+                session = FreshmeatSession(verbose=int(verbose))
+            freshmeat_licenses = session.session.fetch_available_licenses()
+            freshmeat_licenses = map(lambda x: x.lower(), freshmeat_licenses)
+            if license.lower() not in freshmeat_licenses:
+                raise FreshmeatSessionException("license error: needs one of " + `freshmeat_foci`)
+        # All OK
+        return session
 
 if __name__ == "__main__":
     try:
+        session = None
         # First, gather update data from stdin and command-line switches
         factory = FreshmeatMetadataFactory()
         data = factory.getMetadata(sys.stdin)
@@ -232,6 +240,8 @@ if __name__ == "__main__":
         verbose = data['verbose']; del data['verbose']
         delete = data['delete']; del data['delete']
         noemit = data['noemit']; del data['noemit']
+        # Validate any fields we can check with the server
+        session = factory.validate(session, verbose)
         # Maybe we just want to sanity-check the send
         if noemit or verbose:
             for (field, shortopt, key) in freshmeat_field_map:
@@ -242,7 +252,8 @@ if __name__ == "__main__":
         # Time to ship the update.
         if not noemit:
             # Establish session
-            session = FreshmeatSession(verbose=int(verbose))
+            if not session:
+                session = FreshmeatSession(verbose=int(verbose))
             # OK, now actually add the release.
             data['SID'] = session.sid
             if delete:
