@@ -55,7 +55,7 @@ class FreshmeatSession:
         # Sanity-check against the version
         (major, minor) = api_version.split(".")
         if major != required_major or minor < required_minor:
-            LiftException("this version is out of date; get a replacement from Freshmeat.")
+            FreshmeatSessionException("this version is out of date; get a replacement from Freshmeat.")
         if self.verbose:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
@@ -74,7 +74,7 @@ class FreshmeatSession:
             raise FreshmeatSessionException(response)
 
     def withdraw_release(self, release):
-        response = self.session.withdraw_release(data)
+        response = self.session.withdraw_release(release)
         if "OK" not in response:
             raise FreshmeatSessionException(response)
   
