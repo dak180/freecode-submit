@@ -95,7 +95,7 @@ freshmeat_field_map = (
     ("Bzipped-Tar-URL",  "B", "url_bz2"),
     ("Zipped-Tar-URL",   "Z", "url_zip"),
     ("Changelog-URL",    "C", "url_changelog"),
-    ("RPM-URL",	         "R", "url_rom"),
+    ("RPM-URL",	         "R", "url_rpm"),
     ("Debian-URL",	 "D", "url_deb"),
     ("OSX-URL",	         "O", "url_osx"),
     ("BSD-Port-URL",     "P", "url_bsdport"),
