@@ -32,6 +32,11 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
 %clean
 [ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
 
+%files
+%defattr(-,root,root)
+%{_mandir}/man1/freshmeat-submit.1*
+%{_bindir}/freshmeat-submit
+
 %changelog
 * Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.3-1
 - Fix typo affecting the RPM field.
@@ -42,10 +47,5 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
 
 * Mon Dec 22 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.1-1
 - Fix typos in documentation and some untested methods.
-
-%files
-%defattr(-,root,root)
-%{_mandir}/man1/freshmeat-submit.1
-%{_bindir}/freshmeat-submit
 
 
