@@ -70,12 +70,13 @@ class FreshmeatSession:
     def publish_release(self, data):
         "Add a new release to the current project."
         response = self.session.publish_release(data)
-        if response != "Release submission successful":
+        if "OK" not in response:
             raise FreshmeatSessionException(response)
 
     def withdraw_release(self, release):
         response = self.session.withdraw_release(data)
-        # FIXME: add a response check as soon as we know what OK looks like
+        if "OK" not in response:
+            raise FreshmeatSessionException(response)
   
     def logout(self):
         "End the session."
