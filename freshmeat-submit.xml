@@ -303,20 +303,20 @@ Release-Focus, and Hide fields are actually stored for each
 version.</para>
 
 <para>Here are the release-focus types.  Either the string or the
-integer is acceptable.  Case of the string is ignored.</para>
+integer is acceptable.  Case of the string is significant.</para>
 
 <informaltable>
 <tgroup cols='2' rowsep='1'>
 <tbody>
-<row><entry>initial freshmeat announcement</entry><entry>1</entry></row>
-<row><entry>documentation</entry><entry>2</entry></row>
-<row><entry>code cleanup</entry><entry>3</entry></row>
-<row><entry>minor feature enhancements</entry><entry>4</entry></row>
-<row><entry>major feature enhancements</entry><entry>5</entry></row>
-<row><entry>minor bugfixes</entry><entry>6</entry></row>
-<row><entry>major bugfixes</entry><entry>7</entry></row>
-<row><entry>minor security fixes</entry><entry>8</entry></row>
-<row><entry>major security fixes</entry><entry>9</entry></row>
+<row><entry>Initial freshmeat announcement</entry><entry>1</entry></row>
+<row><entry>Documentation</entry><entry>2</entry></row>
+<row><entry>Code cleanup</entry><entry>3</entry></row>
+<row><entry>Minor feature enhancements</entry><entry>4</entry></row>
+<row><entry>Major feature enhancements</entry><entry>5</entry></row>
+<row><entry>Minor bugfixes</entry><entry>6</entry></row>
+<row><entry>Major bugfixes</entry><entry>7</entry></row>
+<row><entry>Minor security fixes</entry><entry>8</entry></row>
+<row><entry>Major security fixes</entry><entry>9</entry></row>
 </tbody>
 </tgroup>
 </informaltable>
@@ -354,11 +354,34 @@ field; the other required fields (including, most notably, the Changes
 field) will be mined out of the RPM.</para>
 </refsect1>
 
+<refsect1><title>FILES</title>
+
+<variablelist>
+<varlistentry>
+<term><filename>~/.netrc</filename></term>
+<listitem>
+<para><application>freshmeat-submit</application> expects to find your
+Freshmeat credentials here.  The correct form for an entry looks like
+this:</para>
+
+<screen>
+machine freshmeat
+     login &lt;your_freshmeat_login&gt;
+     password &lt;your_freshmeat_password&gt;
+</screen>
+
+<para>For security, make sure your <filename>~/.netrc</filename> file
+is not world-readable; we recommend doing <command>chmod 600
+~/.netrc</command>.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
 <refsect1><title>RETURN VALUES</title>
 
 <para>0 on success, 1 on failure.  In case of failure, any error message
 passed back by the XML-RPC interface is issued to standard error.</para>
-
 
 </refsect1>
 <refsect1 id='author'><title>AUTHORS</title> 
