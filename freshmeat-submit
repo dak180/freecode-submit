@@ -22,9 +22,9 @@ class FreshmeatSession:
     "Encapsulate the state of a Freshmeat session."
     freshmeat_xmlrpc = "http://dev.freshmeat.net/xmlrpc/"
 
-    def __init__(self, login=None, password=None, verbose=0):
+    def __init__(self, login=None, password=None, debug=0):
         "Initialize an XML-RPC session to Freshmeat by logging in."
-        self.verbose = verbose
+        self.debug = debug
         # If user didn't supply credentials, fetch from ~/.netrc
         if not login:
             try:
@@ -47,18 +47,18 @@ class FreshmeatSession:
             {"username":login, "password":password})
         self.sid = response['SID']
         self.lifetime = response['Validity']
-        if self.verbose:
+        if self.debug:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
     def set_project(self, name):
         "Set the current project."
-        if self.verbose:
+        if self.debug:
             print "About to look up project"
         self.pid = self.session.lookup_project_id({'SID':self.sid,'name':name})
-        if self.verbose:
+        if self.debug:
             print "Project ID is:", self.pid
         self.branch_list = self.session.fetch_branch_list(self.sid, self.pid)
-        if self.verbose:
+        if self.debug:
             print "Project branch list is:", self.branch_list
 
     def add_release(self, release_info, branch=None):
@@ -149,7 +149,7 @@ class FreshmeatMetadataFactory:
         self.argument_parser.add_option('-n', '--no-stdin', dest='read',
                           default=True, action='store_false',
                           help='Suppress reading fields from stdin.')
-        self.argument_parser.add_option('-V', '--verbose', dest='verbose',
+        self.argument_parser.add_option('-V', '--verbose', dest='debug',
                           default=True, action='store_false',
                           help='Enable verbose debugging.')
         
@@ -174,7 +174,7 @@ class FreshmeatMetadataFactory:
 
         # Merge in options from the command line;
         # they override what's on stdin.
-        data['verbose'] = False
+        data['debug'] = False
         for (key, value) in options.__dict__.items():
             if key != 'read' and value != None:
                 data[key] = value
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     data = factory.getMetadata(sys.stdin)
     try:
         # Establish session
-        session = FreshmeatSession(data['verbose'])
+        session = FreshmeatSession(data['debug'])
         # Connect with the appropriate project
         session.set_project(data['project'])
     except FreshmeatSessionException, e:
