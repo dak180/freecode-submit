@@ -10,7 +10,7 @@ def error(m):
     sys.exit(1)
 
 if sys.version[:6] < '2.2.0':
-    error("you must upgrade to Python 2.2.0 or better to use this script.")
+    error("You must upgrade to Python 2.2.0 or better to use this code.")
 
 import xmlrpclib, netrc, email.Parser, optparse
 
@@ -107,43 +107,6 @@ freshmeat_focus_types = {
     "major security fixes":9,
     }
 focus_error = "Release-Focus must be one of:\n  " + "\n  ".join(map(lambda x: x.capitalize(), freshmeat_focus_types))  + "."
-
-class FreshmeatMetadata:
-    "Complete release information for a project/branch pair."
-    # Member names are identical to the XML-RPC structure members
-    # for an add_release request.
-    def __init__(self):
-	self.version = None      	# Version string of new release
-	self.changes = None      	# Changes list of new release
-        self.release_focus = None	# Release focus ID of new release
-	self.hide_from_frontpage = None # 'Y' if release is to be hidden
-        self.license = None		# License
-	self.url_homepage = None	# Homepage
-	self.url_tgz = None		# Tar/GZ
-	self.url_bz2 = None		# Tar/BZ2
-	self.url_zip = None		# Zip
-	self.url_changelog = None	# Changelog
-	self.url_rpm = None      	# RPM package
-	self.url_deb = None      	# Debian package
-	self.url_osx = None      	# OS X package
-	self.url_bsdport = None		# BSD Ports URL
-	self.url_purchase = None	# Purchase
-	self.url_cvs = None      	# CVS tree (cvsweb)
-	self.url_list = None     	# Mailing list archive
-	self.url_mirror = None   	# Mirror site
-	self.url_demo = None     	# Demo site
-
-    def field_to_header(hdr):
-        hdr = "-".join(map(lambda x: x.capitalize(), hdr.split("_")))
-        for (alias, shortopt, name) in field_map:
-            if hdr == name:
-                hdr = alias
-                break
-        return hdr
-
-    def __repr__(self):
-        res = ""
-        return res
 
 class FreshmeatMetadataFactory:
     "Factory class for producing Metadata records"
