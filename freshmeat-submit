@@ -60,10 +60,13 @@ class FreshmeatSession:
 
     def add_release(self, data):
         "Add a new release to the current project."
-        self.session.add_release(data)
+        response = self.session.add_release(data)
+        if response != "Release submission successful":
+            raise FreshmeatSessionException(resonse)
 
     def withdraw_release(self, release):
-        pass
+        response = self.session.withdraw_release(data)
+        # FIXME: add a response check as soon as we know what OK looks like
   
     def logout(self):
         "End the session."
@@ -154,6 +157,9 @@ class FreshmeatMetadataFactory:
                                             "--" + msg_field.lower(),
                                             dest=rpc_field,
                                             help="Set the %s field"%msg_field)
+        self.argument_parser.add_option('-d', '--delete', dest='delete',
+                          default=False, action='store_true',
+                          help='Suppress reading fields from stdin.')
         self.argument_parser.add_option('-n', '--no-stdin', dest='read',
                           default=True, action='store_false',
                           help='Suppress reading fields from stdin.')
@@ -198,14 +204,17 @@ if __name__ == "__main__":
         # First, gather update data from stdin and command-line switches
         factory = FreshmeatMetadataFactory()
         data = factory.getMetadata(sys.stdin)
-        # Debug switch shouldn't be passed to the server
-        debug = data['debug']
-        del data['debug']
+        # Some switches shouldn't be passed to the server
+        debug = data['debug']; del data['debug']
+        delete = data['delete']; del data['delete']
         # Establish session
         session = FreshmeatSession(debug=int(debug))
         # OK, now actually add the release.
         data['SID'] = session.sid
-        session.add_release(data)
+        if delete:
+            session.withdraw_release(data)
+        else:
+            session.add_release(data)
         # Log out
         session.logout()
     except FreshmeatSessionException, e:
