@@ -46,7 +46,7 @@ class FreshmeatSession:
         response = self.session.login( \
             {"username":login, "password":password})
         self.sid = response['SID']
-        self.lifetime = response['Validity']
+        self.lifetime = response['Lifetime']
         if self.debug:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
@@ -54,20 +54,12 @@ class FreshmeatSession:
         "Get the branch list for the current project."
         if self.debug:
             print "About to look up project"
-        response = self.session.lookup_project_id({'SID':self.sid,'projectname_short':name})
-        self.pid = response['project_id']
-        if self.debug:
-            print "Project ID is:", self.pid
-        self.branch_list = self.session.fetch_branch_list({'SID':self.sid,'project_id':self.pid})
+        self.branch_list = self.session.fetch_branch_list({'SID':self.sid,'project_name':name})
         if self.debug:
             print "Project branch list is:", self.branch_list
 
     def add_release(self, release_info, branch=None):
         "Add a new release to the current project."
-        if not branch and len(self.branch_list) == 1:
-            branch = self.branch_list.keys()[0]
-        if not branch:
-            raise FreshmeatSessionException("branch specification required")
         self.session.add_release(self.sid, self.pid, branch, dir(release_info))
 
     def withdraw_release(self, release):
@@ -78,12 +70,13 @@ class FreshmeatSession:
         return self.session.logout(self.sid)
 
 freshmeat_field_map = (
-    ("Project",          "p", "project_id"),
-    ("Branch",           "b", "branch_id"),
+    ("Project",          "p", "project_name"),
+    ("Branch",           "b", "branch_name"),
     ("Version",          "v", "version"),
     ("Changes",          "c", "changes"),
     ("Release-Focus",    "r", "release_focus"),
     ("Hide",             "x", "hide_from_frontpage"),
+    ("License",          "l", "LICENSE"),
     ("Home-Page-URL",    "H", "url_homepage"),
     ("Gzipped-Tar-URL",  "G", "url_tgz"),
     ("Bzipped-Tar-URL",  "B", "url_bz2"),
@@ -121,6 +114,7 @@ class FreshmeatMetadata:
 	self.changes = None      	# Changes list of new release
         self.release_focus = None	# Release focus ID of new release
 	self.hide_from_frontpage = None # 'Y' if release is to be hidden
+        self.license = None		# License
 	self.url_homepage = None	# Homepage
 	self.url_tgz = None		# Tar/GZ
 	self.url_bz2 = None		# Tar/BZ2
@@ -206,9 +200,14 @@ if __name__ == "__main__":
         data = factory.getMetadata(sys.stdin)
         # Establish session
         session = FreshmeatSession(debug=int(data['debug']))
-        # Grab the branch list
-        session.get_branch_list(data['project'])
-        if "
+        # Grab the branch list and use it to validate the branch:
+        session.get_branch_list(data['project_name'])
+        if not 'branch_name' in data and len(session.branch_list) == 1:
+            data['branch_name'] = session.branch_list[0]
+        if not 'branch_name' in data:
+            raise FreshmeatSessionException("branch specification required")
+        elif data['branch_name'] not in session.branch_list:
+            raise FreshmeatSessionException("no such branch")
 
     except FreshmeatSessionException, e:
         print "meathook:", e.msg
