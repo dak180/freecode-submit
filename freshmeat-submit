@@ -2,6 +2,10 @@
 #
 # meathook -- script transactions with the Freshmeat server
 
+# This is how we sanity-check against the XML-RPC API version.
+required_major = "0"
+required_minor = "2"
+
 import sys
 
 def error(m):
@@ -47,6 +51,11 @@ class FreshmeatSession:
             {"username":login, "password":password})
         self.sid = response['SID']
         self.lifetime = response['Lifetime']
+        api_version = response['API Version']
+        # Sanity-check against the version
+        (major, minor) = api_version.split(".")
+        if major != required_major or minor < required_minor:
+            LiftException("this version is out of date; get a replacement from Freshmeat.")
         if self.verbose:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
