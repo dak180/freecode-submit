@@ -176,8 +176,8 @@ class FreshmeatMetadataFactory:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 data.update({self.header_to_field(key) : value})
-            if not 'comment' in data:
-                data['comment'] = message.get_payload() 
+            if not 'changes' in data:
+                data['changes'] = message.get_payload() 
         # Merge in options from the command line;
         # they override what's on stdin.
         data['debug'] = False
@@ -203,17 +203,9 @@ if __name__ == "__main__":
         del data['debug']
         # Establish session
         session = FreshmeatSession(debug=int(debug))
-        # Grab the branch list and use it to validate the branch:
-        session.get_branch_list(data['project_name'])
-        if not 'branch_name' in data and len(session.branch_list) == 1:
-            data['branch_name'] = session.branch_list[0]
-        if not 'branch_name' in data:
-            raise FreshmeatSessionException("branch specification required")
-        elif data['branch_name'] not in session.branch_list:
-            raise FreshmeatSessionException("no such branch")
         # OK, now actually add the release.
         data['SID'] = session.sid
-        #session.add_release(data)
+        session.add_release(data)
         # Log out
         session.logout()
     except FreshmeatSessionException, e:
