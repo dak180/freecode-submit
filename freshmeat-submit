@@ -171,7 +171,6 @@ class FreshmeatMetadataFactory:
                 data.update({self.header_to_field(key) : value})
             if not 'comment' in data:
                 data['comment'] = message.get_payload() 
-        self.verbose = options.verbose
 
         # Merge in options from the command line;
         # they override what's on stdin.
