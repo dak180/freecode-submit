@@ -1,5 +1,5 @@
 Name: freshmeat-submit
-Version: 1.4
+Version: 1.6
 Release: 1
 URL: http://www.catb.org/~esr/freshmeat-submit/
 Source0: %{name}-%{version}.tar.gz
@@ -38,6 +38,12 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 %{_bindir}/freshmeat-submit
 
 %changelog
+* Mon Aug  2 2004 Eric S. Raymond <esr@snark.thyrsus.com> - 1.6-1
+- Documentation and packaging fixes.
+
+* Fri Apr 30 2004 Eric S. Raymond <esr@snark.thyrsus.com> 1.5-1
+- Fix documentation bug, add note about .netrc.
+
 * Wed Dec 31 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.4-1
 - Fix bug in processing of text foci indicators.
 
