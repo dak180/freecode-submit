@@ -41,13 +41,13 @@ class FreshmeatSession:
             login, account, password = ret
         # Open xml-rpc connection to Freshmeat
         self.session = xmlrpclib.Server(FreshmeatSession.freshmeat_xmlrpc,
-                                     verbose=verbose)
+                                     verbose=1)
         # Log in to Freshmeat
         response = self.session.login( \
             {"username":login, "password":password})
         self.sid = response['SID']
         self.lifetime = response['Validity']
-        if verbose:
+        if self.verbose:
             print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
 
     def set_project(self, name):
