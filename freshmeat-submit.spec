@@ -7,7 +7,7 @@ License: GPL
 Group: Applications/System
 Requires: python
 Summary: submit release information to freshmeat.net
-%undefine __check_files
+BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 freshmeat-submit is a script that supports remote submission of
@@ -23,24 +23,29 @@ overrides by command-line switches.
 echo "No build step is required."
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install
+[ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
+mkdir -p "$RPM_BUILD_ROOT"/usr/bin
+mkdir -p "$RPM_BUILD_ROOT"/usr/share/man/man1/
+cp freshmeat-submit "$RPM_BUILD_ROOT"/usr/bin
+cp freshmeat-submit.1 "$RPM_BUILD_ROOT"/usr/share/man/man1/
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+[ "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != / ] && rm -rf "$RPM_BUILD_ROOT"
 
 %changelog
+* Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.3-1
+- Fix typo affecting the RPM field.
 
-* Wed Dec 24 2003 Eric S. Raymond <esr@snark.thyrsus.com> 
+* Wed Dec 24 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.2-1
 - Add validation using the new server methods for fetching foci and license 
   types.
 
-* Mon Dec 22 2003 Eric S. Raymond <esr@snark.thyrsus.com> 
+* Mon Dec 22 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.1-1
 - Fix typos in documentation and some untested methods.
 
 %files
 %defattr(-,root,root)
-/usr/share/man/man1/freshmeat-submit.1
-/usr/bin/freshmeat-submit
+%{_mandir}/man1/freshmeat-submit.1
+%{_bindir}/freshmeat-submit
 
 
