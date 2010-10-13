@@ -1,0 +1,20 @@
+Project: gpsd
+Version: 2.90
+Release-Focus: Major feature enhancements
+Hide: N
+Home-Page-URL: http://gpsd.berlios.de
+Gzipped-Tar-URL: http://prdownload.berlios.de/gpsd/gpsd-2.90.tar.gz
+
+GPSD-NG, the new JSON-based command protocol, is now deployed; as a
+consequence, AIS is now fully supported in both daemon and client.
+Detection of end of a fix-reporting cycle is now reliable; accordingly
+data is accumulated from cycle start and the "J" (nojitter) option on
+both server and client side is gone. We have abandoned the gpsflash
+subproject since it has become apparent that we can't do it without
+more vendor cooperation than we're likely to get. Increase major
+version of shared library due to significant API change. Added new
+driver for Motorola Oncore receivers, with help from Håkan
+Johansson. gpsfake can now accept multiple logfiles, interleaving test
+sentences from each.  gpsd now accepts error estimates from the NMEA
+$GPGBS sentence.
+
