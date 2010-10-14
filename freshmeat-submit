@@ -2,10 +2,6 @@
 #
 # freshmeat-submit -- script transactions with the Freshmeat server
 
-# This is how we sanity-check against the XML-RPC API version.
-required_major = "1"
-required_minor = "02"
-
 import sys
 
 def error(m):
@@ -16,21 +12,22 @@ def error(m):
 if sys.version[:6] < '2.2.0':
     error("You must upgrade to Python 2.2.0 or better to use this code.")
 
-import xmlrpclib, netrc, email.Parser, optparse, commands
+import urllib2, json, netrc, email.Parser, optparse, commands
 
 class FreshmeatSessionException:
     def __init__(self, msg):
         self.msg = msg
 
 class FreshmeatSession:
-    "Encapsulate the state of a Freshmeat session."
-    freshmeat_xmlrpc = "http://freshmeat.net/xmlrpc/"
+    "Encapsulate the state of a Freshmeat API session."
+    freshmeat_api = "http://freshmeat.net/projects/%s.json"
 
-    def __init__(self, login=None, password=None, verbose=0):
-        "Initialize an XML-RPC session to Freshmeat by logging in."
+    def __init__(self, auth=None, verbose=0):
+        "Initialize Freshmeat session credentials."
         self.verbose = verbose
+        self.auth = auth
         # If user didn't supply credentials, fetch from ~/.netrc
-        if not login:
+        if not self.auth:
             try:
                 credentials = netrc.netrc()
             except netrc.NetrcParseError, e:
@@ -42,45 +39,15 @@ class FreshmeatSession:
             ret = credentials.authenticators("freshmeat")
             if not ret:
                 raise FreshmeatSessionException("no credentials for Freshmeat")
-            login, account, password = ret
-        # Open xml-rpc connection to Freshmeat
-        self.session = xmlrpclib.Server(FreshmeatSession.freshmeat_xmlrpc,
-                                     verbose=verbose)
-        # Log in to Freshmeat
-        response = self.session.login( \
-            {"username":login, "password":password})
-        self.sid = response['SID']
-        self.lifetime = response['Lifetime']
-        api_version = response['API Version']
-        # Sanity-check against the version
-        (major, minor) = api_version.split(".")
-        if major != required_major or minor < required_minor:
-            FreshmeatSessionException("this version is out of date; get a replacement from Freshmeat.")
-        if self.verbose:
-            print "Session ID = %s, lifetime = %s" % (self.sid, self.lifetime)
-
-    def get_branch_list(self, name):
-        "Get the branch list for the current project."
-        if self.verbose:
-            print "About to look up project"
-        self.branch_list = self.session.fetch_branch_list({'SID':self.sid,'project_name':name})
-        if self.verbose:
-            print "Project branch list is:", self.branch_list
+            login, self.account, password = ret
 
     def publish_release(self, data):
         "Add a new release to the current project."
-        response = self.session.publish_release(data)
-        if "OK" not in response:
-            raise FreshmeatSessionException(response)
+        pass
 
     def withdraw_release(self, release):
-        response = self.session.withdraw_release(release)
-        if "OK" not in response:
-            raise FreshmeatSessionException(response)
-  
-    def logout(self):
-        "End the session."
-        return self.session.logout({"SID":self.sid})
+        "Withdraw a specified release from the current project."
+        pass
 
 freshmeat_field_map = (
     ("Project",          "p", "project_name"),
@@ -132,8 +99,7 @@ def crack_rpm(rpm, dict):
             changes = get_rpm_field("changelogtext", rpm)
             # Canonicalize, stripping leading spaces.
             changes = map(lambda x: x.strip(), changes.split('\n'))
-            # There's a 600-char-limit on Freshmeat changes fields.
-            changes = "\n".join(changes)[:599] + "\n"
+            changes = "\n".join(changes) + "\n"
             dict["changes"] = changes 
         # RPMs have a source field; figure out which Freshmeat field it maps to
         source = get_rpm_field("source", rpm)
@@ -206,30 +172,6 @@ class FreshmeatMetadataFactory:
                 data["release_focus"] = int(val)
         return data
 
-    def validate(self, session, verbose="1"):
-        "Validate a metadata object using the Freshmeat server"
-        # Validate Release-Focus field if present
-        focus = data.get('release_focus')
-        if focus and type(focus) != type(0):
-            if not session:
-                session = FreshmeatSession(verbose=int(verbose))
-            freshmeat_foci = session.session.fetch_available_release_foci()
-            if focus in freshmeat_foci:
-                data["release_focus"] = freshmeat_foci[focus]
-            else:
-                raise FreshmeatSessionException("focus type error: needs one of" + `freshmeat_foci.keys()`)
-        # Validate License field if present
-        license = data.get('license')
-        if license:
-            if not session:
-                session = FreshmeatSession(verbose=int(verbose))
-            freshmeat_licenses = session.session.fetch_available_licenses()
-            freshmeat_licenses = map(lambda x: x.lower(), freshmeat_licenses)
-            if license.lower() not in freshmeat_licenses:
-                raise FreshmeatSessionException("license error: needs one of " + `freshmeat_foci`)
-        # All OK
-        return session
-
 if __name__ == "__main__":
     try:
         session = None
@@ -240,8 +182,6 @@ if __name__ == "__main__":
         verbose = data['verbose']; del data['verbose']
         delete = data['delete']; del data['delete']
         noemit = data['noemit']; del data['noemit']
-        # Validate any fields we can check with the server
-        session = factory.validate(session, verbose)
         # Maybe we just want to sanity-check the send
         if noemit or verbose:
             for (field, shortopt, key) in freshmeat_field_map:
@@ -254,19 +194,19 @@ if __name__ == "__main__":
             # Establish session
             if not session:
                 session = FreshmeatSession(verbose=int(verbose))
-            # OK, now actually add the release.
-            data['SID'] = session.sid
+            # OK, now actually add or delete the release.
             if delete:
                 session.withdraw_release(data)
             else:
                 session.publish_release(data)
-            # Log out
-            session.logout()
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
-    except xmlrpclib.Fault, f:
-        print >>sys.stderr,"freshmeat-submit: %d %s" %  (f.faultCode, f.faultString)
+    except urllib2.URLError, f:
+        print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.reason)
+        sys.exit(1)
+    except urllib2.HTTPError, f:
+        print >>sys.stderr,"freshmeat-submit: HTTPError %s" %  (f.code)
         sys.exit(1)
 
 # end
