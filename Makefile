@@ -29,6 +29,9 @@ freshmeat-submit-$(VERS).tar.gz: $(SOURCES) freshmeat-submit.1
 	(cd ..; tar -czvf freshmeat-submit/freshmeat-submit-$(VERS).tar.gz `cat freshmeat-submit/MANIFEST`)
 	(cd ..; rm freshmeat-submit-$(VERS))
 
+clean:
+	rm -f freshmeat-submit.html *~
+
 dist: freshmeat-submit-$(VERS).tar.gz
 
 release: freshmeat-submit-$(VERS).tar.gz freshmeat-submit.html
