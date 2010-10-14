@@ -153,23 +153,27 @@ class FreshmeatMetadataFactory:
             if file.endswith(".rpm"):
                 crack_rpm(file, data, urls)
         # Second, stuff from stdin if present
+        prior_version = data.get("version")
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 if key.endswith("-URL"):
-                    for (k, v) in data.items():
-                        value = value.replace('${' + k + '}', v)
                     urls.update({key[:-4] : value})
                 else:
                     data.update({self.header_to_field(key) : value})
             if not 'changes' in data:
                 data['changes'] = message.get_payload()
+            if prior_version and data.get("version") != prior_version:
+                raise FreshmeatSessionException("Version number conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
+        prior_version = data.get("version")
         data['verbose'] = False
         for (key, value) in options.__dict__.items():
             if key != 'read' and value != None:
                 data[key] = value
+        if data.get("version") != prior_version:
+            raise FreshmeatSessionException("Version number conflict in options.")
         # Release-Focus field special handling
         if "release_focus" in data:
             if data["release_focus"] in '123456789':
@@ -178,8 +182,14 @@ class FreshmeatMetadataFactory:
                 raise FreshmeatSessionException("Invalid release focus")
             data["tag_list"] = data["release_focus" ]
             del data["release_focus"]
-        # Now merge in the URLs
-        data['approved_urls'] = map(lambda (k, v): {"label": k, "url": v}, urls.items())
+        # Now merge in the URLs, doing symbol substitution
+        data['approved_urls'] = []
+        for (label, furl) in urls.items():
+            for (k, v) in data.items():
+                if type(v) == type(""):
+                    furl = furl.replace('${' + k + '}', v)
+            data['approved_urls'].append({"label": label, "url": furl})
+        # Return this
         return data
 
 if __name__ == "__main__":
@@ -193,6 +203,7 @@ if __name__ == "__main__":
         delete = data['delete']; del data['delete']
         noemit = data['noemit']; del data['noemit']
         # Maybe we just want to sanity-check the send
+        data = json.dumps(data)
         if noemit or verbose:
             print data
         # Time to ship the update.
