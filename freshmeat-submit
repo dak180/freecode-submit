@@ -152,11 +152,13 @@ class FreshmeatMetadataFactory:
         for file in args:
             if file.endswith(".rpm"):
                 crack_rpm(file, data, urls)
-        # Second. stuff from stdin if present
+        # Second, stuff from stdin if present
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 if key.endswith("-URL"):
+                    for (k, v) in data.items():
+                        value = value.replace('${' + k + '}', v)
                     urls.update({key[:-4] : value})
                 else:
                     data.update({self.header_to_field(key) : value})

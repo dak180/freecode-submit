@@ -63,9 +63,7 @@ standard input.</para>
 <varlistentry>
 <term>-N</term>
 <listitem>
-<para>Display the merged record from binary package arguments,
-standard input and command-line options to standard output.  Don't
-ship it.</para>
+<para>Dump the generated JSON, but don't ship it. to Freshmeat.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
@@ -91,7 +89,9 @@ is mined out of the RPM and merged into the release information.</para>
 <para>An RFC-2822-format message, strongly resembling an ordinary
 email message, on standard input.  The message header fields each
 specify a particular item of release information; the body (if
-present) becomes the change announcement text.</para>
+present) becomes the change announcement text. Within URL fields, the
+string ${version} will be replaced with the contends of the Version
+field.</para>
 </listitem>
 
 <listitem>
@@ -226,7 +226,7 @@ Version: 1.1
 Release-Focus: Major feature enhancements
 Hide: N
 Website-URL: http://www.catb.org/~esr/doclifter/
-Tar/GZ-URL: http://www.catb.org/~esr/doclifter/doclifter-1.1.tar.gz
+Tar/GZ-URL: http://www.catb.org/~esr/doclifter/doclifter-${version}.tar.gz
 
 Fixed a bug in conditional evaluation that twadmin(8) tickled.  Better
 detection of pure inclusions. Better blank-section elimination.
