@@ -39,7 +39,7 @@ email-message-like data block on standard input, or from command-line
 flags. Values set with command-line flags override those collected
 from standard input, which in turn override those collected from
 binary package files. The accumulated data is entered into the
-freshmeat database via its XML-RPC interface.</para>
+freshmeat database via its API.</para>
 
 <para>A few flags control the operation of
 <application>freshmeat-submit</application> itself.</para>
@@ -49,7 +49,7 @@ freshmeat database via its XML-RPC interface.</para>
 <term>-d</term>
 <listitem>
 <para>Delete the specified release rather than submitting it.  With
-this option, all data other than Project, Branch, and Release are
+this option, all data other than Project and Release are
 ignored.</para>
 </listitem>
 </varlistentry>
@@ -71,7 +71,7 @@ ship it.</para>
 <varlistentry>
 <term>-V</term>
 <listitem>
-<para>Enable verbose debugging of the XML-RPC transaction.  This
+<para>Enable verbose debugging of the transaction.  This
 option is mainly for developers.</para>
 </listitem>
 </varlistentry>
@@ -120,15 +120,6 @@ corresponding command-line switches:</para>
 <entry>-p</entry><entry>--project</entry>
 <entry>
 <para>Name of the project (freshmeat shortname) to operate on.</para>
-</entry>
-</row>
-
-<row>
-<entry>Branch:</entry>           <entry>-</entry>
-<entry>-b</entry><entry>--branch</entry>
-<entry>
-<para>Name of project branch to operate on; defaults to &ldquo;Default
-branch&rdquo;</para>
 </entry>
 </row>
 
@@ -352,6 +343,14 @@ you have already made an RPM, giving it the RPM as a file argument.
 In that case, all you will normally need to supply is the Release-Focus
 field; the other required fields (including, most notably, the Changes
 field) will be mined out of the RPM.</para>
+</refsect1>
+
+<refsect1><title>WARNING</title>
+<para>Since this program was first written, Freshmeat has changed its
+data API significantly. While we have attempted to maintain backward
+compatibility, the data model has changed in significant ways.</para>
+
+<para>There is no longer a Branch attribute.</para>
 </refsect1>
 
 <refsect1><title>FILES</title>

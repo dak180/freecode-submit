@@ -51,10 +51,8 @@ class FreshmeatSession:
 
 freshmeat_field_map = (
     ("Project",          "p", "project_name"),
-    ("Branch",           "b", "branch_name"),
     ("Version",          "v", "version"),
-    ("Changes",          "c", "changes"),
-    ("Release-Focus",    "r", "release_focus"),
+    ("Changes",          "c", "changelog"),
     ("Hide",             "x", "hide_from_frontpage"),
     ("License",          "l", "license"),
     ("Home-Page-URL",    "H", "url_homepage"),
