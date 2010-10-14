@@ -66,7 +66,7 @@ freshmeat_field_map = (
     ("Project",          "p", "name"),
     ("Version",          "v", "version"),
     ("Changes",          "c", "changelog"),
-    ("Hide",             "x", "hide_from_frontpage"),
+    ("Hide",             "x", "hidden_from_frontpage"),
     ("Release-Focus",    "r", "release_focus"),
     ("Tag-List",         "t", "tag_list"),
     ("License-List",     "l", "license_list"),
@@ -144,7 +144,7 @@ class FreshmeatMetadataFactory:
         raise FreshmeatSessionException("Illegal field name %s" % hdr)
 
     def getMetadata(self, stream):
-        "Make a JSON-like Python object describing an update."
+        "Return dictionary objects describing project and release attributes."
         data = {}
         urls = {}
         (options, args) = self.argument_parser.parse_args()
@@ -172,8 +172,9 @@ class FreshmeatMetadataFactory:
         prior_version = data.get("version")
         data['verbose'] = False
         for (key, value) in options.__dict__.items():
-            if key != 'read' and value != None:
+            if key not in ('read', 'no-stdin', 'noemit', 'verbose') and value != None:
                 data[key] = value
+                del options.__dict__[key]
         if data.get("version") != prior_version:
             raise FreshmeatSessionException("Version conflict in options.")
         # Release-Focus field special handling.
@@ -188,29 +189,30 @@ class FreshmeatMetadataFactory:
                 data["tag_list"].append(data["release_focus" ])
             del data["release_focus"]
         # Now merge in the URLs, doing symbol substitution
-        data['approved_urls'] = []
+        urllist = []
         for (label, furl) in urls.items():
             for (k, v) in data.items():
                 if type(v) == type(""):
                     furl = furl.replace('${' + k + '}', v)
-            data['approved_urls'].append({"label": label, "url": furl})
+            urllist.append({"label": label, "location": furl})
         # Return this
-        return data
+        return (options, data, urllist)
 
 if __name__ == "__main__":
     try:
         session = None
         # First, gather update data from stdin and command-line switches
         factory = FreshmeatMetadataFactory()
-        data = factory.getMetadata(sys.stdin)
+        (options, data, urllist) = factory.getMetadata(sys.stdin)
         # Some switches shouldn't be passed to the server
-        verbose = data['verbose']; del data['verbose']
-        delete = data['delete']; del data['delete']
-        noemit = data['noemit']; del data['noemit']
+        verbose = options.verbose
+        delete = 'delete' in options.__dict__ and options.delete
+        noemit = 'noemit' in options.__dict__ and options.noemit
         # Maybe we just want to sanity-check the send
         data = json.dumps(data)
         if noemit or verbose:
             print data
+            print urllist
         # Time to ship the update.
         if not noemit:
             # Establish session
