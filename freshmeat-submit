@@ -160,11 +160,13 @@ class FreshmeatMetadataFactory:
                 if key.endswith("-URL"):
                     urls.update({key[:-4] : value})
                 else:
+                    if key.endswith("List"):
+                        value = map(lambda x: x.strip(), value.split())
                     data.update({self.header_to_field(key) : value})
             if not 'changes' in data:
                 data['changes'] = message.get_payload()
             if prior_version and data.get("version") != prior_version:
-                raise FreshmeatSessionException("Version number conflict on stdin.")
+                raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
         prior_version = data.get("version")
@@ -173,14 +175,17 @@ class FreshmeatMetadataFactory:
             if key != 'read' and value != None:
                 data[key] = value
         if data.get("version") != prior_version:
-            raise FreshmeatSessionException("Version number conflict in options.")
-        # Release-Focus field special handling
+            raise FreshmeatSessionException("Version conflict in options.")
+        # Release-Focus field special handling.
         if "release_focus" in data:
             if data["release_focus"] in '123456789':
                 data["release_focus"] = focus_values[int(data["release_focus"])-1]
             if data["release_focus"] not in focus_values:
                 raise FreshmeatSessionException("Invalid release focus")
-            data["tag_list"] = data["release_focus" ]
+            if "tag_list" not in data:
+                data["tag_list"] = data["release_focus" ]
+            else:
+                data["tag_list"].append(data["release_focus" ])
             del data["release_focus"]
         # Now merge in the URLs, doing symbol substitution
         data['approved_urls'] = []

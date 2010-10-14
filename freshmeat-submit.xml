@@ -153,6 +153,14 @@ below.</para>
 </row>
 
 <row>
+<entry>Tag-List:</entry>     <entry>-</entry>
+<entry>-t</entry><entry>--tag-list</entry>
+<entry>
+<para>Tags to attach to this release. May be a comma-separated list.</para>
+</entry>
+</row>
+
+<row>
 <entry>Hide:</entry>              <entry>-</entry>
 <entry>-x</entry><entry>--hide</entry>
 <entry>
@@ -162,11 +170,11 @@ release will not be visible on the project page.</para>
 </row>
 
 <row>
-<entry>License:</entry>          <entry>-</entry>
-<entry>-l</entry><entry>--license</entry>
+<entry>License-List:</entry>          <entry>-</entry>
+<entry>-l</entry><entry>--license-list</entry>
 <entry>
 <para>Specify the licenses under which the release is issued.  This
-may be a comma-reparated list. Note that this is not copied from the
+may be a comma-separated list. Note that this is not copied from the
 RPM License field, because the values don't map.</para>
 </entry>
 </row>
@@ -191,7 +199,7 @@ RPM License field, because the values don't map.</para>
 </informaltable>
 
 <para>The License-List and all URL fields, when specified, actually change
-the record for the project.  Only the Changes, Version,
+the record for the project.  Only the Tag-List, Changes, Version,
 Release-Focus, and Hide fields are actually stored for each
 version.</para>
 
