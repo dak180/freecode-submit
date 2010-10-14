@@ -49,26 +49,27 @@ class FreshmeatSession:
         "Withdraw a specified release from the current project."
         pass
 
+focus_values = (
+    "Initial freshmeat announcement",
+    "Documentation",
+    "Code cleanup",
+    "Minor feature enhancements",
+    "Major feature enhancements"
+    "Minor bugfixes",
+    "Major bugfixes",
+    "Minor security fixes",
+    "Major security fixes",
+)
+
+# Note: Release Focus is no longer a real Freshmeat field; we'll remap it later.
 freshmeat_field_map = (
-    ("Project",          "p", "project_name"),
+    ("Project",          "p", "name"),
     ("Version",          "v", "version"),
     ("Changes",          "c", "changelog"),
     ("Hide",             "x", "hide_from_frontpage"),
-    ("License",          "l", "license"),
-    ("Home-Page-URL",    "H", "url_homepage"),
-    ("Gzipped-Tar-URL",  "G", "url_tgz"),
-    ("Bzipped-Tar-URL",  "B", "url_bz2"),
-    ("Zipped-Tar-URL",   "Z", "url_zip"),
-    ("Changelog-URL",    "C", "url_changelog"),
-    ("RPM-URL",	         "R", "url_rpm"),
-    ("Debian-URL",	 "D", "url_deb"),
-    ("OSX-URL",	         "O", "url_osx"),
-    ("BSD-Port-URL",     "P", "url_bsdport"),
-    ("Purchase-URL",     "U", "url_purchase"),
-    ("CVS-URL",	         "S", "url_cvs"),
-    ("Mailing-List-URL", "L", "url_list"),
-    ("Mirror-Site-URL",  "M", "url_mirror"),
-    ("Demo-URL",	 "E", "url_demo"),
+    ("Release-Focus",    "r", "release_focus"),
+    ("Tag-List",         "t", "tag_list"),
+    ("License-List",     "l", "license_list"),
     )
 
 def get_rpm_field(fld, rpm):
@@ -78,35 +79,35 @@ def get_rpm_field(fld, rpm):
         raise ValueError
     return output
 
-def crack_rpm(rpm, dict):
+def crack_rpm(rpm, meta, urls):
     "Extract freshmeat metadata from an RPM."
     try:
         # Some fields can be copied literally if present.
-        if not "project_name" in dict:
-            dict["project_name"] = get_rpm_field("name", rpm)
-        if not "version" in dict:
-            dict["version"] = get_rpm_field("version", rpm)
+        if not "name" in meta:
+            meta["name"] = get_rpm_field("name", rpm)
+        if not "version" in meta:
+            meta["version"] = get_rpm_field("version", rpm)
         # This doesn't work.  The values don't map over.
-        #if not "license" in dict:
-        #    dict["license"] = get_rpm_field("license", rpm)
-        if not "url_homepage" in dict:
-            dict["url_homepage"] = get_rpm_field("url", rpm)
-        if not "changes" in dict:
+        #if not "license" in meta:
+        #    meta["license"] = get_rpm_field("license", rpm)
+        if not "url_homepage" in meta:
+            meta["url_homepage"] = get_rpm_field("url", rpm)
+        if not "changes" in meta:
             # Querying gets you the first entry, apparently
             # blank-line-delimited.
             changes = get_rpm_field("changelogtext", rpm)
             # Canonicalize, stripping leading spaces.
             changes = map(lambda x: x.strip(), changes.split('\n'))
             changes = "\n".join(changes) + "\n"
-            dict["changes"] = changes 
+            meta["changelog"] = changes 
         # RPMs have a source field; figure out which Freshmeat field it maps to
         source = get_rpm_field("source", rpm)
         if source.endswith(".tar.gz") or source.endswith(".tgz"):
-            if "url_tgz" not in dict:
-                dict["url_tgz"] = source
+            if "Tar/GZ" not in urls:
+                urls["Tar/GZ"] = source
         if source.endswith(".tar.bz2"):
-            if "url_bz2" not in dict:
-                dict["url_bz2"] = source
+            if "Tar/BZ" not in urls:
+                urls["Tar/BZ"] = source
     except ValueError:
         pass
 
@@ -143,18 +144,22 @@ class FreshmeatMetadataFactory:
         raise FreshmeatSessionException("Illegal field name %s" % hdr)
 
     def getMetadata(self, stream):
-        "Make a Metadata object."
+        "Make a JSON-like Python object describing an update."
         data = {}
+        urls = {}
         (options, args) = self.argument_parser.parse_args()
-        # First stuff from rpms if present.
+        # First stuff from RPMs if present.
         for file in args:
             if file.endswith(".rpm"):
-                crack_rpm(file, data)
-        # Second. stuff fropm stdin if present
+                crack_rpm(file, data, urls)
+        # Second. stuff from stdin if present
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
-                data.update({self.header_to_field(key) : value})
+                if key.endswith("-URL"):
+                    urls.update({key[:-4] : value})
+                else:
+                    data.update({self.header_to_field(key) : value})
             if not 'changes' in data:
                 data['changes'] = message.get_payload()
         # Merge in options from the command line;
@@ -163,11 +168,16 @@ class FreshmeatMetadataFactory:
         for (key, value) in options.__dict__.items():
             if key != 'read' and value != None:
                 data[key] = value
-        # Release-Focus field may have to be validated later.
+        # Release-Focus field special handling
         if "release_focus" in data:
-            val = data["release_focus"].lower()
-            if val in '123456789':
-                data["release_focus"] = int(val)
+            if data["release_focus"] in '123456789':
+                data["release_focus"] = focus_values[int(data["release_focus"])-1]
+            if data["release_focus"] not in focus_values:
+                raise FreshmeatSessionException("Invalid release focus")
+            data["tag_list"] = data["release_focus" ]
+            del data["release_focus"]
+        # Now merge in the URLs
+        data['approved_urls'] = map(lambda (k, v): {"label": k, "url": v}, urls.items())
         return data
 
 if __name__ == "__main__":
@@ -182,11 +192,7 @@ if __name__ == "__main__":
         noemit = data['noemit']; del data['noemit']
         # Maybe we just want to sanity-check the send
         if noemit or verbose:
-            for (field, shortopt, key) in freshmeat_field_map:
-                if key in data and key != 'changes':
-                    print "%s: %s" % (field, data[key])
-            if 'changes' in data:
-                sys.stdout.write("\n" + data['changes'])
+            print data
         # Time to ship the update.
         if not noemit:
             # Establish session

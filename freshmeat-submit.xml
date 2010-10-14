@@ -99,7 +99,7 @@ present) becomes the change announcement text.</para>
 </listitem>
 </orderedlist>
 
-<para>Here is a table of the fields and their 
+<para>Here is a table of metadata fields and their 
 corresponding command-line switches:</para>
 
 <informaltable>
@@ -165,122 +165,24 @@ release will not be visible on the project page.</para>
 <entry>License:</entry>          <entry>-</entry>
 <entry>-l</entry><entry>--license</entry>
 <entry>
-<para>Specify the license under which the release is issued.  Note
-that this is not copied from the RPM License field, because the 
-values don't map.</para>
+<para>Specify the licenses under which the release is issued.  This
+may be a comma-reparated list. Note that this is not copied from the
+RPM License field, because the values don't map.</para>
 </entry>
 </row>
 
 <row>
-<entry>Home-Page-URL:</entry>    <entry>URL</entry>
+<entry>Website-URL:</entry>    <entry>URL</entry>
 <entry>-H</entry><entry>--home-page-url</entry><entry>
 <para>Specify the project home page.</para>
 </entry>
 </row>
 
 <row>
-<entry>Gzipped-Tar-URL:</entry>  <entry>SOURCE</entry>
+<entry>Tar/GZ-URL:</entry>  <entry>SOURCE</entry>
 <entry>-G</entry><entry>--gzipped-tar-url</entry>
 <entry>
 <para>Specify the URL where a gzipped tarball of source can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>Bzipped-Tar-URL:</entry>  <entry>SOURCE</entry>
-<entry>-B</entry><entry>--bzipped-tar-url</entry>
-<entry>
-<para>Specify the URL where a bzipped tarball of source can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>Zipped-Tar-URL:</entry>   <entry>-</entry>
-<entry>-Z</entry><entry>--zipped-tar-url</entry>
-<entry>
-<para>Specify the URL where a zipped tarball of source can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>Changelog-URL:</entry>	         <entry>-</entry>
-<entry>-C</entry><entry>--changelog-url</entry>
-<entry>
-<para>Specify the URL where the project changelog can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>RPM-URL:</entry>	         <entry>-</entry>
-<entry>-R</entry><entry>--rpm-url</entry>
-<entry>
-<para>Specify the URL where an installable binary RPM can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>Debian-URL:</entry>	 <entry>-</entry>
-<entry>-D</entry><entry>--debian-url</entry>
-<entry>
-<para>Specify the URL where an installable Debian package can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>OSX-URL:</entry>	         <entry>-</entry>
-<entry>-O</entry><entry>--osx-url</entry>
-<entry>
-<para>Specify the URL where an OS/X binary can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>BSD-Port-URL:</entry>     <entry>-</entry>
-<entry>-P</entry><entry>--bsdport-url</entry>
-<entry>
-<para>Specify the URL where a BSD Ports package can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>Purchase-URL:</entry>     <entry>-</entry>
-<entry>-U</entry><entry>--purchase-url</entry>
-<entry>
-<para>Specify the URL where the software can be purchased.</para>
-</entry>
-</row>
-
-<row>
-<entry>CVS-URL:</entry>	         <entry>-</entry>
-<entry>-S</entry><entry>--cvs-url</entry>
-<entry>
-<para>Specify the URL of the CVS for this package.</para>
-</entry>
-</row>
-
-<row>
-<entry>Mailing-List-URL:</entry> <entry>-</entry>
-<entry>-L</entry><entry>--mailing-list-url</entry>
-<entry>
-<para>Specify the URL where you can sign up for project mailing lists.</para>
-</entry>
-</row>
-
-<row>
-<entry>Mirror-Site-URL:</entry>  <entry>-</entry>
-<entry>-M</entry><entry>--mirror-site-url</entry>
-<entry>
-<para>Specify the URL where an official mirror site for the project
-can be found.</para>
-</entry>
-</row>
-
-<row>
-<entry>Demo-URL:</entry>        <entry>-</entry>
-<entry>-E</entry><entry>url-demo</entry>
-<entry>
-<para>Specify the URL where a demonstration site for the package
-can be found.</para>
 </entry>
 </row>
 
@@ -288,8 +190,8 @@ can be found.</para>
 </tgroup>
 </informaltable>
 
-<para>The license and all URL fields, when specified, actually change
-the branch record for the project.  Only the Changes, Version,
+<para>The License-List and all URL fields, when specified, actually change
+the record for the project.  Only the Changes, Version,
 Release-Focus, and Hide fields are actually stored for each
 version.</para>
 
@@ -323,9 +225,8 @@ Project: doclifter
 Version: 1.1
 Release-Focus: Major feature enhancements
 Hide: N
-Home-Page-URL: http://www.catb.org/~esr/doclifter/
-Gzipped-Tar-URL: http://www.catb.org/~esr/doclifter/doclifter-1.1.tar.gz
-RPM-URL: http://www.catb.org/~esr/doclifter/doclifter-1.1-1.i386.rpm
+Website-URL: http://www.catb.org/~esr/doclifter/
+Tar/GZ-URL: http://www.catb.org/~esr/doclifter/doclifter-1.1.tar.gz
 
 Fixed a bug in conditional evaluation that twadmin(8) tickled.  Better
 detection of pure inclusions. Better blank-section elimination.
@@ -338,11 +239,11 @@ version lifts 96% of 9829 manual pages in a full Red Hat 9
 installation with Fedora updates to *validated* XML-DocBook.
 </programlisting>
 
-<para>More typically, you will run this program in a directory where
-you have already made an RPM, giving it the RPM as a file argument.
-In that case, all you will normally need to supply is the Release-Focus
-field; the other required fields (including, most notably, the Changes
-field) will be mined out of the RPM.</para>
+<para>You may run this program in a directory where you have already
+made an RPM, giving it the RPM as a file argument.  In that case, all
+you will normally need to supply is the Release-Focus field; the other
+required fields (including, most notably, the Changes field) will be
+mined out of the RPM.</para>
 </refsect1>
 
 <refsect1><title>WARNING</title>
@@ -351,6 +252,21 @@ data API significantly. While we have attempted to maintain backward
 compatibility, the data model has changed in significant ways.</para>
 
 <para>There is no longer a Branch attribute.</para>
+
+<para>The old Release-Focus field is gone.  As a special case, this
+pragram will validate it and use it to fill in the tags list.</para>
+
+<para>The old License field is now License-List and can take a
+comma-separated list of licenses.</para>
+
+<para>The old Home-Page-URL is noe Website-URL to match the convention
+used by the new API.</para>
+
+<para>The old Gzipped-Tar-URL is now Tar/GZ-URL to match the convention
+used by the new API.</para>
+
+<para>All the other special-case URL fields are gone.  They're replaced by
+the general mechanism for pairing URLs with labels.</para>
 </refsect1>
 
 <refsect1><title>FILES</title>
@@ -360,13 +276,12 @@ compatibility, the data model has changed in significant ways.</para>
 <term><filename>~/.netrc</filename></term>
 <listitem>
 <para><application>freshmeat-submit</application> expects to find your
-Freshmeat credentials here.  The correct form for an entry looks like
+Freshmeat authorization tag here.  The correct form for an entry looks like
 this:</para>
 
 <screen>
 machine freshmeat
-     login &lt;your_freshmeat_login&gt;
-     password &lt;your_freshmeat_password&gt;
+     account &lt;your_api_auth_code&gt;
 </screen>
 
 <para>For security, make sure your <filename>~/.netrc</filename> file
@@ -380,7 +295,7 @@ is not world-readable; we recommend doing <command>chmod 600
 <refsect1><title>RETURN VALUES</title>
 
 <para>0 on success, 1 on failure.  In case of failure, any error message
-passed back by the XML-RPC interface is issued to standard error.</para>
+passed back by the Freshmeat API is issued to standard error.</para>
 
 </refsect1>
 <refsect1 id='author'><title>AUTHORS</title> 
