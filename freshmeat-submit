@@ -254,7 +254,7 @@ class FreshmeatMetadataFactory:
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
-                value = re.sub("\n +", " ", value)
+                value = re.sub("\n +", " ", value).strip()
                 if key.endswith("-URL"):
                     urls.update({key[:-4] : value})
                 else:
@@ -262,7 +262,7 @@ class FreshmeatMetadataFactory:
                         value = map(lambda x: x.strip(), value.split())
                     data.update({self.header_to_field(key) : value})
             if not 'changelog' in data:
-                data['changelog'] = message.get_payload()
+                data['changelog'] = message.get_payload().strip() + "\n"
             if prior_version and data.get("version") != prior_version:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
