@@ -262,7 +262,9 @@ class FreshmeatMetadataFactory:
                         value = map(lambda x: x.strip(), value.split())
                     data.update({self.header_to_field(key) : value})
             if not 'changelog' in data:
-                data['changelog'] = message.get_payload().strip() + "\n"
+                payload = message.get_payload().strip()
+                if payload:
+                    data['changelog'] = payload + "\n"
             if prior_version and data.get("version") != prior_version:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
