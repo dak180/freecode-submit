@@ -61,17 +61,36 @@ class FreshmeatSession:
         self.project = name
         query = "http://freshmeat.net/projects/%s.json?auth_code=%s" \
                 % (self.project, self.auth)
-        self.handle = urllib2.urlopen(query)
-        content = json.loads(self.handle.read())
+        handle = urllib2.urlopen(query)
+        content = json.loads(handle.read())
         content = content['project']
         self.permalink = content['permalink'] 
         if self.verbose:
             print "Permalink:", self.permalink
 
+    def issue_wrapped_request(self, url, request):
+        "Wrap a JSON object with the auth code and ship it as a POST request"
+        url = "http://freshmeat.net/" + url
+        data = json.dumps({"auth_code" : self.auth, "release": request})
+        headers = {"Content-Type" : "application/json"}
+        if self.verbose:
+            print "Request URL:", url
+        if self.verbose:
+            print "Request data:", data
+        if self.verbose:
+            print "Request headers:", headers
+        handle = urllib2.urlopen(urllib2.Request(url=url, data=data, headers=headers))
+        if self.verbose:
+            print handle.info()
+        content = json.loads(handle.read())
+        if self.verbose:
+            print "Response:", content
+
     def publish_release(self, data):
         "Add a new release to the current project."
         if self.verbose:
             print "Publishing %s release: %s" % (self.project, `data`)
+        self.issue_wrapped_request(self.permalink + "/releases.json", data)
 
     def withdraw_release(self, release):
         "Withdraw a specified release from the current project."
@@ -87,7 +106,6 @@ class FreshmeatSession:
         "Update URL list for a project."
         if self.verbose:
             print "URL list update for %s is: %s" % (self.project, urldict)
-        pass
 
 focus_values = (
     "Initial freshmeat announcement",
@@ -223,6 +241,9 @@ class FreshmeatMetadataFactory:
                 del options.__dict__[key]
         if data.get("version") != prior_version:
             raise FreshmeatSessionException("Version conflict in options.")
+        # Hidden flag special handling
+        if "hidden_from_frontpage" in data:
+            data["hidden_from_frontpage"] = data["hidden_from_frontpage"] in ("Y", "y") 
         # Release-Focus field special handling.
         if "release_focus" in data:
             if data["release_focus"] in '123456789':
