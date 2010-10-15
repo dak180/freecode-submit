@@ -158,7 +158,7 @@ def crack_rpm(rpm, meta, urls):
         #    meta["license"] = get_rpm_field("license", rpm)
         if not "url_homepage" in meta:
             meta["url_homepage"] = get_rpm_field("url", rpm)
-        if not "changes" in meta:
+        if not "changelog" in meta:
             # Querying gets you the first entry, apparently
             # blank-line-delimited.
             changes = get_rpm_field("changelogtext", rpm)
@@ -229,8 +229,8 @@ class FreshmeatMetadataFactory:
                     if key.endswith("List"):
                         value = map(lambda x: x.strip(), value.split())
                     data.update({self.header_to_field(key) : value})
-            if not 'changes' in data:
-                data['changes'] = message.get_payload()
+            if not 'changelog' in data:
+                data['changelog'] = message.get_payload()
             if prior_version and data.get("version") != prior_version:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
@@ -308,9 +308,11 @@ if __name__ == "__main__":
         sys.exit(1)
     except urllib2.URLError, f:
         print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.code,)
+        print >>sys.stderr,f.read()
         sys.exit(1)
     except urllib2.HTTPError, f:
         print >>sys.stderr,"freshmeat-submit: HTTPError %s" %  (f.code)
+        print >>sys.stderr,f.read()
         sys.exit(1)
 
 # end
