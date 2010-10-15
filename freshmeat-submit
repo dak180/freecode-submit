@@ -33,7 +33,6 @@ class Update:
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
-    freshmeat_api = "http://freshmeat.net/projects/%s.json"
 
     def __init__(self, auth=None, verbose=0):
         "Initialize Freshmeat session credentials."
@@ -53,13 +52,19 @@ class FreshmeatSession:
             ret = credentials.authenticators("freshmeat")
             if not ret:
                 raise FreshmeatSessionException("no credentials for Freshmeat")
-            login, self.account, password = ret
+            login, self.auth, password = ret
 
     def on_project(self, name):
         "Select project by Freshmeat shortname."
         if self.verbose:
             print "Selecting project: %s" % name
         self.project = name
+        query = "http://freshmeat.net/projects/%s.json?auth_code=%s" \
+                % (self.project, self.auth)
+        self.handle = urllib2.urlopen(query)
+        content = json.loads(self.handle.read())
+        print "Header", self.handle.info()
+        print "Content", content
 
     def publish_release(self, data):
         "Add a new release to the current project."
@@ -261,7 +266,7 @@ if __name__ == "__main__":
         # Time to ship the update.
         if not noemit:
             # Establish session
-            session = FreshmeatSession(verbose=int(verbose))
+            session = FreshmeatSession(verbose=int(verbose))            
             session.on_project(update.name)
             # OK, now actually add or delete the release.
             if update.per_release:
@@ -277,7 +282,7 @@ if __name__ == "__main__":
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
     except urllib2.URLError, f:
-        print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.reason)
+        print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.code,)
         sys.exit(1)
     except urllib2.HTTPError, f:
         print >>sys.stderr,"freshmeat-submit: HTTPError %s" %  (f.code)
