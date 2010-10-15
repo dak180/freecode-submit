@@ -67,7 +67,7 @@ class FreshmeatSession:
         content = content['project']
         self.permalink = content['permalink'] 
 
-    def issue_wrapped_request(self, url, request):
+    def edit_request(self, url, request):
         "Wrap a JSON object with the auth code and ship it as a POST request"
         url = "http://freshmeat.net/" + url
         data = {"auth_code" : self.auth}
@@ -92,8 +92,8 @@ class FreshmeatSession:
         "Add a new release to the current project."
         if self.verbose:
             print "Publishing %s release: %s" % (self.project, `data`)
-        self.issue_wrapped_request("projects/" + self.permalink + "/releases.json",
-                                   {"release": data})
+        self.edit_request("projects/" + self.permalink + "/releases.json",
+                          {"release": data})
 
     def withdraw_release(self, release):
         "Withdraw a specified release from the current project."
@@ -105,15 +105,36 @@ class FreshmeatSession:
         "Update the core data for a project."
         if self.verbose:
             print "Core data update for %s is: %s" % (self.project, coredata)
-        self.issue_wrapped_request("projects/" + self.permalink + ".json",
-                                   {"project": data})
+        self.edit_request("projects/" + self.permalink + ".json",
+                          {"project": data})
 
     def update_urls(self, urlassoc):
         "Update URL list for a project."
         if self.verbose:
             print "URL list update for %s is: %s" % (self.project, urlassoc)
         # First, get permalinks for all existing URLs
-        pass
+        query = "http://freshmeat.net/projects/%s/urls.json?auth_code=%s" \
+                % (self.permalink, self.auth)
+        handle = urllib2.urlopen(query)
+        content = json.loads(handle.read())
+        if self.verbose:
+            print "Returned URL list:", content
+        permadict = {}
+        for item in content:
+            inner = item['url']
+            permadict[inner['label']] = inner['permalink']
+        # OK, now run through the update list...
+        for (label, url) in urlassoc:
+            if label in permadict:
+                # updating where we need to
+                self.edit_request("projects/%s/urls/%s.json"
+                                  % (self.permalink, permadict[label]),
+                                  {"url" : {"label": label, "location" : url}})
+            else:
+                # and adding where we don't.
+                self.edit_request("projects/%s/urls.json"
+                                  % (self.permalink,),
+                                  {"url" : {"label": label, "location" : url}})
 
 focus_values = (
     "Initial freshmeat announcement",
