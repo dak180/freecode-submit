@@ -27,9 +27,9 @@ class Update:
         self.per_release = {}
     def __repr__(self):
         return "Project: " + self.name + "\n" + \
-                  "Data: " + `self.per_project` + "\n" + \
+                  "Project Data: " + `self.per_project` + "\n" + \
                   "URLs: " + `self.urldict` + "\n" + \
-                  "Release: " + `self.per_release` + "\n"
+                  "Release Data: " + `self.per_release` + "\n"
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
@@ -188,10 +188,10 @@ class FreshmeatMetadataFactory:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
+        controls = ('read', 'delete', 'no-stdin', 'noemit', 'verbose')
         prior_version = data.get("version")
-        data['verbose'] = False
         for (key, value) in options.__dict__.items():
-            if key not in ('read', 'no-stdin', 'noemit', 'verbose') and value != None:
+            if key not in controls and value != None:
                 data[key] = value
                 del options.__dict__[key]
         if data.get("version") != prior_version:
@@ -233,9 +233,9 @@ if __name__ == "__main__":
         factory = FreshmeatMetadataFactory()
         (options, update) = factory.getMetadata(sys.stdin)
         # Some switches shouldn't be passed to the server
-        verbose = options.verbose
-        delete = 'delete' in options.__dict__ and options.delete
-        noemit = 'noemit' in options.__dict__ and options.noemit
+        verbose = 'verbose' in options.__dict__ and options.verbose
+        delete  = 'delete' in options.__dict__ and options.delete
+        noemit  = 'noemit' in options.__dict__ and options.noemit
         # Maybe we just want to sanity-check the send
         if noemit or verbose:
             print update
