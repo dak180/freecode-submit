@@ -39,6 +39,7 @@ class FreshmeatSession:
         "Initialize Freshmeat session credentials."
         self.verbose = verbose
         self.auth = auth
+        self.project = None
         # If user didn't supply credentials, fetch from ~/.netrc
         if not self.auth:
             try:
@@ -54,12 +55,31 @@ class FreshmeatSession:
                 raise FreshmeatSessionException("no credentials for Freshmeat")
             login, self.account, password = ret
 
+    def on_project(self, name):
+        "Select project by Freshmeat shortname."
+        if self.verbose:
+            print "Selecting project: %s" % name
+        self.project = name
+
     def publish_release(self, data):
         "Add a new release to the current project."
-        pass
+        if self.verbose:
+            print "Publishing %s release: %s" % (self.project, `data`)
 
     def withdraw_release(self, release):
         "Withdraw a specified release from the current project."
+        if self.verbose:
+            print "Withdrawing %s release: %s" % (self.project, release)
+
+    def update_core(self, coredata):
+        "Update the core data for a project."
+        if self.verbose:
+            print "Core data update for %s is: %s" % (self.project, coredata)
+
+    def update_urls(self, urldict):
+        "Update URL list for a project."
+        if self.verbose:
+            print "URL list update for %s is: %s" % (self.project, urldict)
         pass
 
 focus_values = (
@@ -228,7 +248,6 @@ class FreshmeatMetadataFactory:
 
 if __name__ == "__main__":
     try:
-        session = None
         # First, gather update data from stdin and command-line switches
         factory = FreshmeatMetadataFactory()
         (options, update) = factory.getMetadata(sys.stdin)
@@ -237,18 +256,23 @@ if __name__ == "__main__":
         delete  = 'delete' in options.__dict__ and options.delete
         noemit  = 'noemit' in options.__dict__ and options.noemit
         # Maybe we just want to sanity-check the send
-        if noemit or verbose:
+        if noemit:
             print update
         # Time to ship the update.
         if not noemit:
             # Establish session
-            if not session:
-                session = FreshmeatSession(verbose=int(verbose))
+            session = FreshmeatSession(verbose=int(verbose))
+            session.on_project(update.name)
             # OK, now actually add or delete the release.
-            if delete:
-                session.withdraw_release(data)
-            else:
-                session.publish_release(data)
+            if update.per_release:
+                if delete:
+                    session.withdraw_release(update['version'])
+                else:
+                    session.publish_release(update.per_release)
+            if update.per_project:
+                session.update_core(update.per_project)
+            if update.urldict:
+                session.update_urls(update.urldict)
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)

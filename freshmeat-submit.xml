@@ -126,7 +126,7 @@ corresponding command-line switches:</para>
 
 <row>
 <entry>Description:</entry>  <entry>Project</entry>  <entry>DESCRIPTION</entry>
-<entry>-p</entry><entry>--description</entry>
+<entry>-D</entry><entry>--description</entry>
 <entry>
 <para>Description of the project.</para>
 </entry>
@@ -134,7 +134,7 @@ corresponding command-line switches:</para>
 
 <row>
 <entry>License-List:</entry>  <entry>Project</entry>           <entry>-</entry>
-<entry>-l</entry><entry>--license-list</entry>
+<entry>-L</entry><entry>--license-list</entry>
 <entry>
 <para>Specify the licenses under which the release is issued.  This
 may be a comma-separated list. Note that this is not copied from the
