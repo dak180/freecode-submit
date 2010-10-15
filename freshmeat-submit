@@ -66,8 +66,6 @@ class FreshmeatSession:
         content = json.loads(handle.read())
         content = content['project']
         self.permalink = content['permalink'] 
-        if self.verbose:
-            print "Permalink:", self.permalink
 
     def issue_wrapped_request(self, url, request):
         "Wrap a JSON object with the auth code and ship it as a POST request"
@@ -78,10 +76,10 @@ class FreshmeatSession:
         headers = {"Content-Type" : "application/json"}
         if self.verbose:
             print "Request URL:", url
+        #if self.verbose:
+        #    print "Request headers:", headers
         if self.verbose:
             print "Request data:", data
-        if self.verbose:
-            print "Request headers:", headers
         if self.emit_enable:
             handle = urllib2.urlopen(urllib2.Request(url=url, data=data, headers=headers))
             if self.verbose:
@@ -207,7 +205,7 @@ class FreshmeatMetadataFactory:
         self.argument_parser.add_option('-n', '--no-stdin', dest='read',
                           default=True, action='store_false',
                           help='Suppress reading fields from stdin.')
-        self.argument_parser.add_option('-N', '--noemit', dest='noemit',
+        self.argument_parser.add_option('-N', '--dryrun', dest='dryrun',
                           default=False, action='store_true',
                           help='Suppress reading fields from stdin.')
         self.argument_parser.add_option('-V', '--verbose', dest='verbose',
@@ -247,7 +245,7 @@ class FreshmeatMetadataFactory:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
-        controls = ('read', 'delete', 'no-stdin', 'noemit', 'verbose')
+        controls = ('read', 'delete', 'no-stdin', 'dryrun', 'verbose')
         prior_version = data.get("version")
         for (key, value) in options.__dict__.items():
             if key not in controls and value != None:
@@ -299,10 +297,10 @@ if __name__ == "__main__":
         # Some switches shouldn't be passed to the server
         verbose = 'verbose' in options.__dict__ and options.verbose
         delete  = 'delete' in options.__dict__ and options.delete
-        noemit  = 'noemit' in options.__dict__ and options.noemit
+        dryrun  = 'dryrun' in options.__dict__ and options.dryrun
         # Time to ship the update.
         # Establish session
-        session = FreshmeatSession(verbose=int(verbose), emit_enable=not noemit)
+        session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)
         session.on_project(update.name)
         # OK, now actually add or delete the release.
         if update.per_release:

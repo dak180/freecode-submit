@@ -46,7 +46,7 @@ freshmeat database via its API.</para>
 
 <variablelist>
 <varlistentry>
-<term>-d</term>
+<term>-d, --delete</term>
 <listitem>
 <para>Delete the specified release rather than submitting it.  With
 this option, all data other than Project and Release are
@@ -56,20 +56,20 @@ this mode will throw an error.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term>-n</term>
+<term>-n, --no-stdin</term>
 <listitem>
 <para>Process command-line options only; don't read data from
 standard input.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term>-N</term>
+<term>-N, --dryrun</term>
 <listitem>
 <para>Dump the generated JSON, but don't ship it. to Freshmeat.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
-<term>-V</term>
+<term>-V, --verbose</term>
 <listitem>
 <para>Enable verbose debugging of the transaction.  This
 option is mainly for developers.</para>
@@ -227,10 +227,10 @@ release will not be visible on the project page.</para>
 </tgroup>
 </informaltable>
 
-<para>The License-List and all URL fields, when specified, actually change
-the record for the project.  Only the Tag-List, Changes, Version,
-Release-Focus, and Hide fields are actually stored for each
-version.</para>
+<para>The Summary, Description, License-List, Project-Tag-List and all
+URL fields, when specified, actually change the record for the
+project.  Only the Tag-List, Changes, Version, Release-Focus, and Hide
+fields are actually stored for each version.</para>
 
 <para>Here are the release-focus types.  Either the string or the
 integer is acceptable.  Case of the string is significant.</para>
