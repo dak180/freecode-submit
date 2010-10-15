@@ -34,10 +34,11 @@ class Update:
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
 
-    def __init__(self, auth=None, verbose=0):
+    def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freshmeat session credentials."
-        self.verbose = verbose
         self.auth = auth
+        self.verbose = verbose
+        self.emit_enable = emit_enable
         self.project = None
         # If user didn't supply credentials, fetch from ~/.netrc
         if not self.auth:
@@ -71,7 +72,9 @@ class FreshmeatSession:
     def issue_wrapped_request(self, url, request):
         "Wrap a JSON object with the auth code and ship it as a POST request"
         url = "http://freshmeat.net/" + url
-        data = json.dumps({"auth_code" : self.auth, "release": request})
+        data = {"auth_code" : self.auth}
+        data.update(request)
+        data = json.dumps(data)
         headers = {"Content-Type" : "application/json"}
         if self.verbose:
             print "Request URL:", url
@@ -79,20 +82,20 @@ class FreshmeatSession:
             print "Request data:", data
         if self.verbose:
             print "Request headers:", headers
-        handle = urllib2.urlopen(urllib2.Request(url=url, data=data, headers=headers))
-        if self.verbose:
-            print handle.info()
-        content = handle.read()
-        if self.verbose:
-            print "Response:", content
+        if self.emit_enable:
+            handle = urllib2.urlopen(urllib2.Request(url=url, data=data, headers=headers))
+            if self.verbose:
+                print handle.info()
+                content = handle.read()
+                if self.verbose:
+                    print "Response:", content
 
     def publish_release(self, data):
         "Add a new release to the current project."
         if self.verbose:
             print "Publishing %s release: %s" % (self.project, `data`)
-        self.issue_wrapped_request("projects/" + \
-                                   self.permalink + \
-                                   "/releases.json", data)
+        self.issue_wrapped_request("projects/" + self.permalink + "/releases.json",
+                                   {"release": data})
 
     def withdraw_release(self, release):
         "Withdraw a specified release from the current project."
@@ -104,6 +107,8 @@ class FreshmeatSession:
         "Update the core data for a project."
         if self.verbose:
             print "Core data update for %s is: %s" % (self.project, coredata)
+        self.issue_wrapped_request("projects/" + self.permalink + ".json",
+                                   {"project": data})
 
     def update_urls(self, urldict):
         "Update URL list for a project."
@@ -295,24 +300,20 @@ if __name__ == "__main__":
         verbose = 'verbose' in options.__dict__ and options.verbose
         delete  = 'delete' in options.__dict__ and options.delete
         noemit  = 'noemit' in options.__dict__ and options.noemit
-        # Maybe we just want to sanity-check the send
-        if noemit:
-            print update
         # Time to ship the update.
-        if not noemit:
-            # Establish session
-            session = FreshmeatSession(verbose=int(verbose))            
-            session.on_project(update.name)
-            # OK, now actually add or delete the release.
-            if update.per_release:
-                if delete:
-                    session.withdraw_release(update['version'])
-                else:
-                    session.publish_release(update.per_release)
-            if update.per_project:
-                session.update_core(update.per_project)
-            if update.urldict:
-                session.update_urls(update.urldict)
+        # Establish session
+        session = FreshmeatSession(verbose=int(verbose), emit_enable=not noemit)
+        session.on_project(update.name)
+        # OK, now actually add or delete the release.
+        if update.per_release:
+            if delete:
+                session.withdraw_release(update['version'])
+            else:
+                session.publish_release(update.per_release)
+        if update.per_project:
+            session.update_core(update.per_project)
+        if update.urldict:
+            session.update_urls(update.urldict)
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
