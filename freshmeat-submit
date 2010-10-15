@@ -327,7 +327,7 @@ if __name__ == "__main__":
         session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)
         session.on_project(update.name)
         # OK, now actually add or delete the release.
-        if update.per_release and update.per_release.keys() != ("version",):
+        if update.per_release and update.per_release.keys() != ["version"]:
             if delete:
                 session.withdraw_release(update['version'])
             else:
