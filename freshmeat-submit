@@ -306,12 +306,12 @@ if __name__ == "__main__":
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
-    except urllib2.URLError, f:
-        print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.code,)
-        print >>sys.stderr,f.read()
-        sys.exit(1)
     except urllib2.HTTPError, f:
         print >>sys.stderr,"freshmeat-submit: HTTPError %s" %  (f.code)
+        print >>sys.stderr,f.read()
+        sys.exit(1)
+    except urllib2.URLError, f:
+        print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.reason,)
         print >>sys.stderr,f.read()
         sys.exit(1)
 
