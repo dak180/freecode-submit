@@ -90,7 +90,9 @@ class FreshmeatSession:
         "Add a new release to the current project."
         if self.verbose:
             print "Publishing %s release: %s" % (self.project, `data`)
-        self.issue_wrapped_request(self.permalink + "/releases.json", data)
+        self.issue_wrapped_request("projects/" + \
+                                   self.permalink + \
+                                   "/releases.json", data)
 
     def withdraw_release(self, release):
         "Withdraw a specified release from the current project."
