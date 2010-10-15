@@ -98,6 +98,7 @@ class FreshmeatSession:
         "Withdraw a specified release from the current project."
         if self.verbose:
             print "Withdrawing %s release: %s" % (self.project, release)
+        raise FreshmeatSessionException("Release removal is not yet implemented in the 3.0 API.")
 
     def update_core(self, coredata):
         "Update the core data for a project."

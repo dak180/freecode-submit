@@ -6,7 +6,7 @@
 <refmeta>
 <refentrytitle>freshmeat-submit</refentrytitle>
 <manvolnum>1</manvolnum>
-<refmiscinfo class='date'>Dec 7 2003</refmiscinfo>
+<refmiscinfo class='date'>Oct 15 2010</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>freshmeat-submit</refname>
@@ -50,7 +50,9 @@ freshmeat database via its API.</para>
 <listitem>
 <para>Delete the specified release rather than submitting it.  With
 this option, all data other than Project and Release are
-ignored.</para>
+ignored. Note: This is <emphasis role='bold'>not yet
+implemented</emphasis> in the 3.0 API; until it is, invoking
+this mode will throw an error.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
@@ -267,6 +269,8 @@ mined out of the RPM.</para>
 <para>Since this program was first written, Freshmeat has changed its
 data API significantly. While we have attempted to maintain backward
 compatibility, the data model has changed in significant ways.</para>
+
+<para>There is not as yet any way to withdraw a release.</para>
 
 <para>There is no longer a Branch attribute.</para>
 
