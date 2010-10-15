@@ -11,7 +11,7 @@ Tar/GZ-URL: http://catb.org/~esr/freshmeat-submit/freshmeat-submit-${version}.ta
 This is a test release dummy being used to check if the new
 implementation of freshmeat-submit actually works with the 3.0 API
 before releasing it as 2.0.  Subscribers should ignore it; freshmeat
-admins, you can delete it out of the que but please email me at
+admins, you can delete it out of the queue but please email me at
 esr@thyrsus.com to inform me that it atrived and of any errors in
 processing.
 
