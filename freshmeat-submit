@@ -23,12 +23,12 @@ class Update:
     def __init__(self):
         self.name = None
         self.per_project = {}
-        self.urldict = {}
+        self.urlassoc = []
         self.per_release = {}
     def __repr__(self):
         return "Project: " + self.name + "\n" + \
                   "Project Data: " + `self.per_project` + "\n" + \
-                  "URLs: " + `self.urldict` + "\n" + \
+                  "URLs: " + `self.urlassoc` + "\n" + \
                   "Release Data: " + `self.per_release` + "\n"
 
 class FreshmeatSession:
@@ -108,10 +108,12 @@ class FreshmeatSession:
         self.issue_wrapped_request("projects/" + self.permalink + ".json",
                                    {"project": data})
 
-    def update_urls(self, urldict):
+    def update_urls(self, urlassoc):
         "Update URL list for a project."
         if self.verbose:
-            print "URL list update for %s is: %s" % (self.project, urldict)
+            print "URL list update for %s is: %s" % (self.project, urlassoc)
+        # First, get permalinks for all existing URLs
+        pass
 
 focus_values = (
     "Initial freshmeat announcement",
@@ -273,11 +275,11 @@ class FreshmeatMetadataFactory:
             for (k, v) in data.items():
                 if type(v) == type(""):
                     furl = furl.replace('${' + k + '}', v)
-            urllist.append({"label": label, "location": furl})
+            urllist.append((label, furl))
         # Sort out what things go where 
         update = Update()
         update.name = data.pop('name')
-        update.urldict = urllist
+        update.urlassoc = urllist
         for (k, v) in data.items():
             if k in freshmeat_projectwide:
                 # Hack to get around a namespace collision
@@ -310,8 +312,8 @@ if __name__ == "__main__":
                 session.publish_release(update.per_release)
         if update.per_project:
             session.update_core(update.per_project)
-        if update.urldict:
-            session.update_urls(update.urldict)
+        if update.urlassoc:
+            session.update_urls(update.urlassoc)
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
