@@ -65,7 +65,10 @@ standard input.</para>
 <varlistentry>
 <term>-N, --dryrun</term>
 <listitem>
-<para>Dump the generated JSON, but don't ship it. to Freshmeat.</para>
+<para>Generate JSON, but don't ship any modification requests to Freshmeat.
+Useful for debugging in combination with -V.  Note, this mode may generate
+requests which read data from Freshmeat in order to get permalink data.
+</para>
 </listitem>
 </varlistentry>
 <varlistentry>

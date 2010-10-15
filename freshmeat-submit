@@ -327,15 +327,15 @@ if __name__ == "__main__":
         session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)
         session.on_project(update.name)
         # OK, now actually add or delete the release.
+        if update.per_project:
+            session.update_core(update.per_project)
+        if update.urlassoc:
+            session.update_urls(update.urlassoc)
         if update.per_release and update.per_release.keys() != ["version"]:
             if delete:
                 session.withdraw_release(update['version'])
             else:
                 session.publish_release(update.per_release)
-        if update.per_project:
-            session.update_core(update.per_project)
-        if update.urlassoc:
-            session.update_urls(update.urlassoc)
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
