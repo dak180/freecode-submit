@@ -63,13 +63,14 @@ focus_values = (
 
 # Note: Release Focus is no longer a real Freshmeat field; we'll remap it later.
 freshmeat_field_map = (
-    ("Project",          "p", "name"),
-    ("Version",          "v", "version"),
-    ("Changes",          "c", "changelog"),
-    ("Hide",             "x", "hidden_from_frontpage"),
-    ("Release-Focus",    "r", "release_focus"),
-    ("Tag-List",         "t", "tag_list"),
-    ("License-List",     "l", "license_list"),
+    ("Project",          "P", "name"),                   # Project
+    ("Description",      "D", "description"),            # Project
+    ("License-List",     "L", "license_list"),           # Project
+    ("Version",          "v", "version"),                # Release
+    ("Changes",          "c", "changelog"),              # Release
+    ("Hide",             "x", "hidden_from_frontpage"),  # Release
+    ("Release-Focus",    "r", "release_focus"),          # Release
+    ("Tag-List",         "t", "tag_list"),               # Release
     )
 
 def get_rpm_field(fld, rpm):
@@ -85,6 +86,8 @@ def crack_rpm(rpm, meta, urls):
         # Some fields can be copied literally if present.
         if not "name" in meta:
             meta["name"] = get_rpm_field("name", rpm)
+        if not "description" in meta:
+            meta["description"] = get_rpm_field("description", rpm)
         if not "version" in meta:
             meta["version"] = get_rpm_field("version", rpm)
         # This doesn't work.  The values don't map over.

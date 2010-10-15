@@ -103,10 +103,11 @@ field.</para>
 corresponding command-line switches:</para>
 
 <informaltable>
-<tgroup cols='5' rowsep='1'>
+<tgroup cols='6' rowsep='1'>
 <thead>
 <row>
   <entry>Message field</entry>
+  <entry>Scope</entry>
   <entry>RPM tag</entry>
   <entry>Short switch</entry>
   <entry>Long switch</entry>
@@ -116,7 +117,7 @@ corresponding command-line switches:</para>
 <tbody>
 
 <row>
-<entry>Project:</entry>          <entry>NAME</entry>
+<entry>Project:</entry>      <entry>Project</entry>   <entry>NAME</entry>
 <entry>-p</entry><entry>--project</entry>
 <entry>
 <para>Name of the project (freshmeat shortname) to operate on.</para>
@@ -124,53 +125,15 @@ corresponding command-line switches:</para>
 </row>
 
 <row>
-<entry>Version:</entry>	         <entry>VERSION</entry>
-<entry>-v</entry><entry>--version</entry>
+<entry>Description:</entry>  <entry>Project</entry>  <entry>DESCRIPTION</entry>
+<entry>-p</entry><entry>--description</entry>
 <entry>
-<para>Version string to be associated with the release.
-Conventionally this will look like n.n or n.n.n, where each n
-is decimal digits.</para>
+<para>Description of the project.</para>
 </entry>
 </row>
 
 <row>
-<entry>Changes:</entry>           <entry>CHANGELOGTEXT</entry>
-<entry>-c</entry><entry>--changes</entry>
-<entry>
-<para>The Changes field.  Plain text, no more than 600 characters.  
-If no Changes field or option is already present, the changes text is taken
-from the body of the RFC-822 message on standard input.</para>
-</entry>
-</row>
-
-<row>
-<entry>Release-Focus:</entry>     <entry>-</entry>
-<entry>-r</entry><entry>--release-focus</entry>
-<entry>
-<para>Purpose of this release.  See the table of release-focus types 
-below.</para>
-</entry>
-</row>
-
-<row>
-<entry>Tag-List:</entry>     <entry>-</entry>
-<entry>-t</entry><entry>--tag-list</entry>
-<entry>
-<para>Tags to attach to this release. May be a comma-separated list.</para>
-</entry>
-</row>
-
-<row>
-<entry>Hide:</entry>              <entry>-</entry>
-<entry>-x</entry><entry>--hide</entry>
-<entry>
-<para>If this field is present and has the value &ldquo;Y&rdquo;, this
-release will not be visible on the project page.</para>
-</entry>
-</row>
-
-<row>
-<entry>License-List:</entry>          <entry>-</entry>
+<entry>License-List:</entry>  <entry>Project</entry>           <entry>-</entry>
 <entry>-l</entry><entry>--license-list</entry>
 <entry>
 <para>Specify the licenses under which the release is issued.  This
@@ -180,14 +143,60 @@ RPM License field, because the values don't map.</para>
 </row>
 
 <row>
-<entry>Website-URL:</entry>    <entry>URL</entry>
+<entry>Version:</entry>	     <entry>Release</entry>   <entry>VERSION</entry>
+<entry>-v</entry><entry>--version</entry>
+<entry>
+<para>Version string to be associated with the release.
+Conventionally this will look like n.n or n.n.n, where each n
+is decimal digits.</para>
+</entry>
+</row>
+
+<row>
+<entry>Changes:</entry>      <entry>Release</entry>   <entry>CHANGELOGTEXT</entry>
+<entry>-c</entry><entry>--changes</entry>
+<entry>
+<para>The Changes field.  Plain text, no more than 600 characters.  
+If no Changes field or option is already present, the changes text is taken
+from the body of the RFC-822 message on standard input.</para>
+</entry>
+</row>
+
+<row>
+<entry>Release-Focus:</entry><entry>Release</entry>   <entry>-</entry>
+<entry>-r</entry><entry>--release-focus</entry>
+<entry>
+<para>Purpose of this release.  See the table of release-focus types 
+below.</para>
+</entry>
+</row>
+
+<row>
+<entry>Tag-List:</entry>     <entry>Release</entry>    <entry>-</entry>
+<entry>-t</entry><entry>--tag-list</entry>
+<entry>
+<para>Tags to attach to this release. May be a comma-separated list.</para>
+</entry>
+</row>
+
+<row>
+<entry>Hide:</entry>         <entry>Release</entry>    <entry>-</entry>
+<entry>-x</entry><entry>--hide</entry>
+<entry>
+<para>If this field is present and has the value &ldquo;Y&rdquo;, this
+release will not be visible on the project page.</para>
+</entry>
+</row>
+
+<row>
+<entry>Website-URL:</entry>  <entry>Project</entry>   <entry>URL</entry>
 <entry>-H</entry><entry>--home-page-url</entry><entry>
 <para>Specify the project home page.</para>
 </entry>
 </row>
 
 <row>
-<entry>Tar/GZ-URL:</entry>  <entry>SOURCE</entry>
+<entry>Tar/GZ-URL:</entry>  <entry>Project</entry>    <entry>SOURCE</entry>
 <entry>-G</entry><entry>--gzipped-tar-url</entry>
 <entry>
 <para>Specify the URL where a gzipped tarball of source can be found.</para>
