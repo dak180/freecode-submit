@@ -2,7 +2,7 @@
 #
 # freshmeat-submit -- script transactions with the Freshmeat server
 
-import sys
+import sys, re
 
 def error(m):
     sys.stderr.write("freshmeat-submit: %s\n" % m)
@@ -106,7 +106,7 @@ class FreshmeatSession:
         if self.verbose:
             print "Core data update for %s is: %s" % (self.project, coredata)
         self.edit_request("projects/" + self.permalink + ".json",
-                          {"project": data})
+                          {"project": coredata})
 
     def update_urls(self, urlassoc):
         "Update URL list for a project."
@@ -117,8 +117,6 @@ class FreshmeatSession:
                 % (self.permalink, self.auth)
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
-        if self.verbose:
-            print "Returned URL list:", content
         permadict = {}
         for item in content:
             inner = item['url']
@@ -256,6 +254,7 @@ class FreshmeatMetadataFactory:
         if options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
+                value = re.sub("\n +", " ", value)
                 if key.endswith("-URL"):
                     urls.update({key[:-4] : value})
                 else:
