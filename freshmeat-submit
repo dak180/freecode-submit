@@ -87,7 +87,7 @@ focus_values = (
     "Documentation",
     "Code cleanup",
     "Minor feature enhancements",
-    "Major feature enhancements"
+    "Major feature enhancements",
     "Minor bugfixes",
     "Major bugfixes",
     "Minor security fixes",
