@@ -125,17 +125,23 @@ focus_values = (
 # Note: Release Focus is no longer a real Freshmeat field; we'll remap it later.
 freshmeat_field_map = (
     ("Project",          "P", "name"),                   # Project
+    ("Summary",          "S", "oneliner"),               # Project
     ("Description",      "D", "description"),            # Project
     ("License-List",     "L", "license_list"),           # Project
+    ("Project-Tag-List", "T", "project_tag_list"),       # Project
     ("Version",          "v", "version"),                # Release
     ("Changes",          "c", "changelog"),              # Release
     ("Hide",             "x", "hidden_from_frontpage"),  # Release
     ("Release-Focus",    "r", "release_focus"),          # Release
-    ("Tag-List",         "t", "tag_list"),               # Release
+    ("Release-Tag-List", "t", "tag_list"),               # Release
     )
 
 # Which attributes have project scope, all others have release scupe
-freshmeat_projectwide = ('name', 'description', 'license_list')
+freshmeat_projectwide = ('name',
+                         'description',
+                         'oneliner',
+                         'license_list',
+                         'project_tag_list')
 
 def get_rpm_field(fld, rpm):
     cmd = "rpm --queryformat='%%{%s}' -qp %s" % (fld, rpm)
@@ -271,6 +277,9 @@ class FreshmeatMetadataFactory:
         update.urldict = urllist
         for (k, v) in data.items():
             if k in freshmeat_projectwide:
+                # Hack to get around a namespace collision
+                if k == "project_release_tag":
+                    k = "release_tag"
                 update.per_project[k] = v
             else:
                 update.per_release[k] = v
