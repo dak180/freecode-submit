@@ -82,7 +82,7 @@ class FreshmeatSession:
         handle = urllib2.urlopen(urllib2.Request(url=url, data=data, headers=headers))
         if self.verbose:
             print handle.info()
-        content = json.loads(handle.read())
+        content = handle.read()
         if self.verbose:
             print "Response:", content
 
