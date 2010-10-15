@@ -63,8 +63,10 @@ class FreshmeatSession:
                 % (self.project, self.auth)
         self.handle = urllib2.urlopen(query)
         content = json.loads(self.handle.read())
-        print "Header", self.handle.info()
-        print "Content", content
+        content = content['project']
+        self.permalink = content['permalink'] 
+        if self.verbose:
+            print "Permalink:", self.permalink
 
     def publish_release(self, data):
         "Add a new release to the current project."
