@@ -14,6 +14,21 @@ if sys.version[:6] < '2.2.0':
 
 import urllib2, json, netrc, email.Parser, optparse, commands
 
+# The API implementation is sensitive to the kind of HTTP request
+# method you use.  The general rule is:
+#
+# Reading records:                GET
+# Adding new records:             POST
+# Updating existing records:      PUT
+# Deleting existing records:      DELETE
+
+class RequestWithMethod(urllib2.Request):
+    "Hack for forcing the method in a request - allows PUT and DELETE"
+    # Method lifted from http://benjamin.smedbergs.us/blog/2008-10-21/putting-and-deleteing-in-python-urllib2/
+    def __init__(self, method, *args, **kwargs):
+        self._method = method
+        urllib2.Request.__init__(self, *args, **kwargs)
+
 class FreshmeatSessionException:
     def __init__(self, msg):
         self.msg = msg
@@ -67,21 +82,25 @@ class FreshmeatSession:
         content = content['project']
         self.permalink = content['permalink'] 
 
-    def edit_request(self, url, request):
-        "Wrap a JSON object with the auth code and ship it as a POST request"
+    def edit_request(self, url, method, request):
+        "Wrap a JSON object with the auth code and ship it as a request"
         url = "http://freshmeat.net/" + url
         data = {"auth_code" : self.auth}
         data.update(request)
         data = json.dumps(data)
         headers = {"Content-Type" : "application/json"}
         if self.verbose:
-            print "Request URL:", url
+            print "Request URL:", method, url
         #if self.verbose:
         #    print "Request headers:", headers
         if self.verbose:
             print "Request data:", data
         if self.emit_enable:
-            handle = urllib2.urlopen(urllib2.Request(url=url, data=data, headers=headers))
+            req = RequestWithMethod(method=method,
+                                    url=url,
+                                    data=data,
+                                    headers=headers)
+            handle = urllib2.urlopen(req)
             if self.verbose:
                 print handle.info()
                 content = handle.read()
@@ -93,12 +112,14 @@ class FreshmeatSession:
         if self.verbose:
             print "Publishing %s release: %s" % (self.project, `data`)
         self.edit_request("projects/" + self.permalink + "/releases.json",
+                          "POST",
                           {"release": data})
 
     def withdraw_release(self, release):
         "Withdraw a specified release from the current project."
         if self.verbose:
             print "Withdrawing %s release: %s" % (self.project, release)
+        # When this is implemented, it will require a DELETE method
         raise FreshmeatSessionException("Release removal is not yet implemented in the 3.0 API.")
 
     def update_core(self, coredata):
@@ -106,6 +127,7 @@ class FreshmeatSession:
         if self.verbose:
             print "Core data update for %s is: %s" % (self.project, coredata)
         self.edit_request("projects/" + self.permalink + ".json",
+                          "PUT",
                           {"project": coredata})
 
     def update_urls(self, urlassoc):
@@ -127,11 +149,13 @@ class FreshmeatSession:
                 # updating where we need to
                 self.edit_request("projects/%s/urls/%s.json"
                                   % (self.permalink, permadict[label]),
+                                  "PUT",
                                   {"url" : {"label": label, "location" : url}})
             else:
                 # and adding where we don't.
                 self.edit_request("projects/%s/urls.json"
                                   % (self.permalink,),
+                                  "POST",
                                   {"url" : {"label": label, "location" : url}})
 
 focus_values = (
