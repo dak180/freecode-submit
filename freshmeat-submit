@@ -2,19 +2,22 @@
 #
 # freshmeat-submit -- script transactions with the Freshmeat server
 
-import sys, re
+import sys, re, urllib2, json, netrc, email.Parser, optparse, commands
 
-def error(m):
-    sys.stderr.write("freshmeat-submit: %s\n" % m)
-    sys.stderr.flush()
-    sys.exit(1)
+class Update:
+    "Encapsulate dictionaries describing a project metadata update."
+    def __init__(self):
+        self.name = None
+        self.per_project = {}
+        self.urlassoc = []
+        self.per_release = {}
+    def __repr__(self):
+        return "Project: " + self.name + "\n" + \
+                  "Project Data: " + `self.per_project` + "\n" + \
+                  "URLs: " + `self.urlassoc` + "\n" + \
+                  "Release Data: " + `self.per_release` + "\n"
 
-if sys.version[:6] < '2.2.0':
-    error("You must upgrade to Python 2.2.0 or better to use this code.")
-
-import urllib2, json, netrc, email.Parser, optparse, commands
-
-# The API implementation is sensitive to the kind of HTTP request
+# The Freshmeat API implementation is sensitive to the kind of HTTP request
 # method you use.  The general rule is:
 #
 # Reading records:                GET
@@ -32,19 +35,6 @@ class RequestWithMethod(urllib2.Request):
 class FreshmeatSessionException:
     def __init__(self, msg):
         self.msg = msg
-
-class Update:
-    "Encapsulate dictionaries describing a project metadata update."
-    def __init__(self):
-        self.name = None
-        self.per_project = {}
-        self.urlassoc = []
-        self.per_release = {}
-    def __repr__(self):
-        return "Project: " + self.name + "\n" + \
-                  "Project Data: " + `self.per_project` + "\n" + \
-                  "URLs: " + `self.urlassoc` + "\n" + \
-                  "Release Data: " + `self.per_release` + "\n"
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
