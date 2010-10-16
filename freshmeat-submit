@@ -158,49 +158,15 @@ class FreshmeatSession:
                                   "POST",
                                   {"url" : {"label": label, "location" : url}})
 
-focus_values = (
-    "Initial freshmeat announcement",
-    "Documentation",
-    "Code cleanup",
-    "Minor feature enhancements",
-    "Major feature enhancements",
-    "Minor bugfixes",
-    "Major bugfixes",
-    "Minor security fixes",
-    "Major security fixes",
-)
-
-# Note: Release Focus is no longer a real Freshmeat field; we'll remap it later.
-freshmeat_field_map = (
-    ("Project",          "P", "name"),                   # Project
-    ("Summary",          "S", "oneliner"),               # Project
-    ("Description",      "D", "description"),            # Project
-    ("License-List",     "L", "license_list"),           # Project
-    ("Project-Tag-List", "T", "project_tag_list"),       # Project
-    ("Version",          "v", "version"),                # Release
-    ("Changes",          "c", "changelog"),              # Release
-    ("Hide",             "x", "hidden_from_frontpage"),  # Release
-    ("Release-Focus",    "r", "release_focus"),          # Release
-    ("Release-Tag-List", "t", "tag_list"),               # Release
-    )
-
-# Which attributes have project scope, all others have release scupe
-freshmeat_projectwide = ('name',
-                         'description',
-                         'oneliner',
-                         'license_list',
-                         'project_tag_list')
-
-def get_rpm_field(fld, rpm):
-    cmd = "rpm --queryformat='%%{%s}' -qp %s" % (fld, rpm)
-    (status, output) = commands.getstatusoutput(cmd)
-    if status != 0:
-        raise ValueError
-    return output
-
 def crack_rpm(rpm, meta, urls):
     "Extract freshmeat metadata from an RPM."
     try:
+        def get_rpm_field(fld, rpm):
+            cmd = "rpm --queryformat='%%{%s}' -qp %s" % (fld, rpm)
+            (status, output) = commands.getstatusoutput(cmd)
+            if status != 0:
+                raise ValueError
+            return output
         # Some fields can be copied literally if present.
         if not "name" in meta:
             meta["name"] = get_rpm_field("name", rpm)
@@ -233,13 +199,45 @@ def crack_rpm(rpm, meta, urls):
         pass
 
 class FreshmeatMetadataFactory:
-    "Factory class for producing Metadata records"
+    "Factory class for producing Freshmeat records in JSON."
+    freshmeat_field_map = (
+        ("Project",          "P", "name"),                   # Project
+        ("Summary",          "S", "oneliner"),               # Project
+        ("Description",      "D", "description"),            # Project
+        ("License-List",     "L", "license_list"),           # Project
+        ("Project-Tag-List", "T", "project_tag_list"),       # Project
+        ("Version",          "v", "version"),                # Release
+        ("Changes",          "c", "changelog"),              # Release
+        ("Hide",             "x", "hidden_from_frontpage"),  # Release
+        ("Release-Tag-List", "t", "tag_list"),               # Release
+        # Note: Release Focus is no longer a real Freshmeat field.
+        # We remap it below.
+        ("Release-Focus",    "r", "release_focus"),          # Release
+        )
+    # Conventional values for releae focus
+    focus_values = (
+        "Initial freshmeat announcement",
+        "Documentation",
+        "Code cleanup",
+        "Minor feature enhancements",
+        "Major feature enhancements",
+        "Minor bugfixes",
+        "Major bugfixes",
+        "Minor security fixes",
+        "Major security fixes",
+    )
+    # Which attributes have project scope, all others have release scupe
+    projectwide = ('name',
+                   'description',
+                   'oneliner',
+                   'license_list',
+                   'project_tag_list')
 
     def __init__(self):
         self.message_parser = email.Parser.Parser()
         self.argument_parser = optparse.OptionParser( \
             usage="usage: %prog [options]")
-        for (msg_field, shortopt, rpc_field) in freshmeat_field_map:
+        for (msg_field, shortopt, rpc_field) in FreshmeatMetadataFactory.freshmeat_field_map:
             self.argument_parser.add_option("-" + shortopt,
                                             "--" + msg_field.lower(),
                                             dest=rpc_field,
@@ -259,7 +257,7 @@ class FreshmeatMetadataFactory:
         
     def header_to_field(self, hdr):
         lhdr = hdr.lower().replace("-", "_")
-        for (alias, shortopt, field) in freshmeat_field_map:
+        for (alias, shortopt, field) in FreshmeatMetadataFactory.freshmeat_field_map:
             if lhdr == alias.lower().replace("-", "_"):
                 return field
         raise FreshmeatSessionException("Illegal field name %s" % hdr)
@@ -307,8 +305,8 @@ class FreshmeatMetadataFactory:
         # Release-Focus field special handling.
         if "release_focus" in data:
             if data["release_focus"] in '123456789':
-                data["release_focus"] = focus_values[int(data["release_focus"])-1]
-            if data["release_focus"] not in focus_values:
+                data["release_focus"] = FreshmeatMetadataFactory.focus_values[int(data["release_focus"])-1]
+            if data["release_focus"] not in FreshmeatMetadataFactory.focus_values:
                 raise FreshmeatSessionException("Invalid release focus")
             if "tag_list" not in data:
                 data["tag_list"] = data["release_focus" ]
@@ -327,7 +325,7 @@ class FreshmeatMetadataFactory:
         update.name = data.pop('name')
         update.urlassoc = urllist
         for (k, v) in data.items():
-            if k in freshmeat_projectwide:
+            if k in FreshmeatMetadataFactory.projectwide:
                 # Hack to get around a namespace collision
                 if k == "project_release_tag":
                     k = "release_tag"
