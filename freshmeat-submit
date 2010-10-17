@@ -11,11 +11,6 @@ class Update:
         self.per_project = {}
         self.urlassoc = []
         self.per_release = {}
-    def __repr__(self):
-        return "Project: " + self.name + "\n" + \
-                  "Project Data: " + `self.per_project` + "\n" + \
-                  "URLs: " + `self.urlassoc` + "\n" + \
-                  "Release Data: " + `self.per_release` + "\n"
 
 # The Freshmeat API implementation is sensitive to the kind of HTTP request
 # method you use.  The general rule is:
