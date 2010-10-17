@@ -84,7 +84,7 @@ following order:</para>
 
 <orderedlist>
 <listitem>
-<para>An RFC-2822-format message, strongly resembling an ordinary
+<para>An RFC-2822-format job card, strongly resembling an ordinary
 email message, on standard input.  The message header fields each
 specify a particular item of release information; the body (if
 present) becomes the change announcement text. Within URL fields, the
@@ -201,26 +201,48 @@ release will not be visible on the project page.</para>
 </entry>
 </row>
 
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Additionally, you can specify tagged URL fields for the
+Freshmeat project record with header lines ending in "-URL:".  The tag
+will be the header with the "-URL:" suffix stripped off. Some examples
+of how to set frequently-used URL types:</para>
+
+<informaltable>
+<tgroup cols='3' rowsep='1'>
+<thead>
 <row>
-<entry>Website-URL:</entry>  <entry>Project</entry>
-<entry>-H</entry><entry>--website-url</entry><entry>
-<para>Specify the project home page.</para>
-</entry>
+  <entry>Message field</entry>
+  <entry>Tag</entry>
+  <entry>Usage</entry>
+</row>
+</thead>
+<tbody>
+
+<row>
+  <entry>Website-URL:</entry>
+  <entry>Website</entry>
+  <entry>Project website home page</entry>
 </row>
 
 <row>
-<entry>Tar/GZ-URL:</entry>  <entry>Project</entry>
-<entry>-G</entry><entry>--tar-gz-url</entry>
-<entry>
-<para>Specify the URL where a gzipped tarball of source can be found.</para>
-</entry>
+  <entry>Tar/GZ-URL:</entry>
+  <entry>Tar/GZ</entry>
+  <entry>tar archive compressed with gzip</entry>
+</row>
 
 <row>
-<entry>Changelog-URL:</entry>  <entry>Project</entry>
-<entry>-G</entry><entry>--changelog-url</entry>
-<entry>
-<para>Specify the URL where a gzipped tarball of source can be found.</para>
-</entry>
+  <entry>Tar/BZ-URL:</entry>
+  <entry>Tar/BZ</entry>
+  <entry>tar archive compressed with bzip</entry>
+</row>
+
+<row>
+  <entry>Changelog-URL</entry>
+  <entry>Changelog</entry>
+  <entry>project change log</entry>
 </row>
 
 </tbody>
