@@ -38,6 +38,7 @@ class FreshmeatSessionException:
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
+    server = "http://freshmeat.net/"
 
     def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freshmeat session credentials."
@@ -65,7 +66,7 @@ class FreshmeatSession:
         if self.verbose:
             print "Selecting project: %s" % name
         self.project = name
-        query = "http://freshmeat.net/projects/%s.json?auth_code=%s" \
+        query = FreshmeatSession.server + "projects/%s.json?auth_code=%s" \
                 % (self.project, self.auth)
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
@@ -74,7 +75,7 @@ class FreshmeatSession:
 
     def edit_request(self, url, method, request):
         "Wrap a JSON object with the auth code and ship it as a request"
-        url = "http://freshmeat.net/" + url
+        url = FreshmeatSession.server + url
         data = {"auth_code" : self.auth}
         data.update(request)
         data = json.dumps(data)
@@ -125,7 +126,7 @@ class FreshmeatSession:
         if self.verbose:
             print "URL list update for %s is: %s" % (self.project, urlassoc)
         # First, get permalinks for all existing URLs
-        query = "http://freshmeat.net/projects/%s/urls.json?auth_code=%s" \
+        query = FreshmeatSession.server + "projects/%s/urls.json?auth_code=%s" \
                 % (self.permalink, self.auth)
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
