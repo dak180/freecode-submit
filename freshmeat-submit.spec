@@ -1,5 +1,5 @@
 Name: freshmeat-submit
-Version: 1.6
+Version: 2.0
 Release: 1
 URL: http://www.catb.org/~esr/freshmeat-submit/
 Source0: %{name}-%{version}.tar.gz
@@ -11,10 +11,10 @@ BuildRoot: %{_tmppath}/%{name}-root
 
 %description
 freshmeat-submit is a script that supports remote submission of
-release updates to Freshmeat via its XML-RPC interface.  It is
-intended for use in project release scripts.  It reads the metadata
-from an RFC-2822-like message on standard input, possibly with
-overrides by command-line switches.
+release updates to Freshmeat via its JSON API.  It is intended for use
+in project release scripts.  It reads the metadata from an
+RFC-2822-like message on standard input, possibly with overrides by
+command-line switches.
 
 %prep
 %setup -q
@@ -38,6 +38,9 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 %{_bindir}/freshmeat-submit
 
 %changelog
+* Mon Oct 17 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.0-1
+- Updated to work with the JSON-based 3.0 freshmeat.net API.
+
 * Mon Aug  2 2004 Eric S. Raymond <esr@snark.thyrsus.com> - 1.6-1
 - Documentation and packaging fixes.
 

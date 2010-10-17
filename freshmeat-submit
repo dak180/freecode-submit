@@ -44,7 +44,7 @@ class FreshmeatSessionException:
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
-    server = "http://staging.freshmeat3.net/"
+    server = "http://freshmeat.net/"
 
     def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freshmeat session credentials."

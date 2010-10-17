@@ -1,18 +1,14 @@
 Project: freshmeat-submit
-Description: freshmeat-submit is a tool to submit version updates to 
-    freshmeat.net. It is designed to run from within a project release 
-    script or makefile production, and uses freshmeat.net's JSON API. 
-Version: 1.7
+Description: freshmeat-submit is a tool to submit version and project 
+    metadata updates to freshmeat.net. It is designed to run from within a 
+    project release script or makefile production.
+Version: 2.0
 Release-Focus: Major feature enhancements
 Hide: Y
 Website-URL: http://catb.org/~esr/freshmeat-submit/
 Tar/GZ-URL: http://catb.org/~esr/freshmeat-submit/freshmeat-submit-${version}.tar.gz
 
-This is a test release dummy being used to check if the new
-implementation of freshmeat-submit actually works with the 3.0 API
-before releasing it as 2.0.  Subscribers should ignore it; freshmeat
-admins, you can delete it out of the queue but please email me at
-esr@thyrsus.com to inform me that it arrived and of any errors in
-processing.
+This release updates the tool to use freshmeat.net's JSON API.
+
 
 
