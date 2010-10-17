@@ -27,10 +27,16 @@ class Update:
 
 class RequestWithMethod(urllib2.Request):
     "Hack for forcing the method in a request - allows PUT and DELETE"
-    # Method lifted from http://benjamin.smedbergs.us/blog/2008-10-21/putting-and-deleteing-in-python-urllib2/
     def __init__(self, method, *args, **kwargs):
-        self._method = method
+        self.method = method
         urllib2.Request.__init__(self, *args, **kwargs)
+    def get_method(self):
+        if self.method:
+            return self.method
+        elif self.has_data():
+            return "POST"
+        else:
+            return "GET"
 
 class FreshmeatSessionException:
     def __init__(self, msg):
@@ -38,7 +44,7 @@ class FreshmeatSessionException:
 
 class FreshmeatSession:
     "Encapsulate the state of a Freshmeat API session."
-    server = "http://freshmeat.net/"
+    server = "http://staging.freshmeat3.net/"
 
     def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freshmeat session credentials."
