@@ -28,11 +28,14 @@ class Update:
 class RequestWithMethod(urllib2.Request):
     "Hack for forcing the method in a request - allows PUT and DELETE"
     def __init__(self, method, *args, **kwargs):
-        self.method = method
+        # This assignment works directly in older Python versions
+        self._method = method
         urllib2.Request.__init__(self, *args, **kwargs)
     def get_method(self):
-        if self.method:
-            return self.method
+        "Deduce the HTTP method to use."
+        # This method works in newer Pythons (2.6.5, possibly earlier).
+        if self._method:
+            return self._method
         elif self.has_data():
             return "POST"
         else:
@@ -155,46 +158,6 @@ class FreshmeatSession:
                                   "POST",
                                   {"url" : {"label": label, "location" : url}})
 
-def crack_rpm(rpm, meta, urls):
-    "Extract freshmeat metadata from an RPM."
-    try:
-        def get_rpm_field(fld, rpm):
-            cmd = "rpm --queryformat='%%{%s}' -qp %s" % (fld, rpm)
-            (status, output) = commands.getstatusoutput(cmd)
-            if status != 0:
-                raise ValueError
-            return output
-        # Some fields can be copied literally if present.
-        if not "name" in meta:
-            meta["name"] = get_rpm_field("name", rpm)
-        if not "description" in meta:
-            meta["description"] = get_rpm_field("description", rpm)
-        if not "version" in meta:
-            meta["version"] = get_rpm_field("version", rpm)
-        # This doesn't work.  The values don't map over.
-        #if not "license" in meta:
-        #    meta["license"] = get_rpm_field("license", rpm)
-        if not "url_homepage" in meta:
-            meta["url_homepage"] = get_rpm_field("url", rpm)
-        if not "changelog" in meta:
-            # Querying gets you the first entry, apparently
-            # blank-line-delimited.
-            changes = get_rpm_field("changelogtext", rpm)
-            # Canonicalize, stripping leading spaces.
-            changes = map(lambda x: x.strip(), changes.split('\n'))
-            changes = "\n".join(changes) + "\n"
-            meta["changelog"] = changes 
-        # RPMs have a source field; figure out which Freshmeat field it maps to
-        source = get_rpm_field("source", rpm)
-        if source.endswith(".tar.gz") or source.endswith(".tgz"):
-            if "Tar/GZ" not in urls:
-                urls["Tar/GZ"] = source
-        if source.endswith(".tar.bz2"):
-            if "Tar/BZ" not in urls:
-                urls["Tar/BZ"] = source
-    except ValueError:
-        pass
-
 class FreshmeatMetadataFactory:
     "Factory class for producing Freshmeat records in JSON."
     freshmeat_field_map = (
@@ -255,7 +218,7 @@ class FreshmeatMetadataFactory:
     def header_to_field(self, hdr):
         lhdr = hdr.lower().replace("-", "_")
         for (alias, shortopt, field) in FreshmeatMetadataFactory.freshmeat_field_map:
-            if lhdr == alias.lower().replace("-", "_"):
+            if lhdr == alias.lower().replace("-", "_").replace("/", "_"):
                 return field
         raise FreshmeatSessionException("Illegal field name %s" % hdr)
 
@@ -264,11 +227,7 @@ class FreshmeatMetadataFactory:
         data = {}
         urls = {}
         (options, args) = self.argument_parser.parse_args()
-        # First stuff from RPMs if present.
-        for file in args:
-            if file.endswith(".rpm"):
-                crack_rpm(file, data, urls)
-        # Second, stuff from stdin if present
+        # Stuff from stdin if present
         prior_version = data.get("version")
         if options.read:
             message = self.message_parser.parse(stream)
