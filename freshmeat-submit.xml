@@ -6,11 +6,13 @@
 <refmeta>
 <refentrytitle>freshmeat-submit</refentrytitle>
 <manvolnum>1</manvolnum>
+<refmiscinfo class='source'>freshmeat-submit</refmiscinfo>
+<refmiscinfo class='manual'>Development Tools</refmiscinfo>
 <refmiscinfo class='date'>Oct 17 2010</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>freshmeat-submit</refname>
-<refpurpose>submit release announcements to freshmeat.net</refpurpose>
+<refpurpose>submit release announcements and project metadata updates to freshmeat.net</refpurpose>
 </refnamediv>
 <refsynopsisdiv id='synopsis'>
 
@@ -22,7 +24,6 @@
     <arg>-d</arg>
     <arg><replaceable>data-options</replaceable></arg>
     <arg rep='repeat'><replaceable>data-options</replaceable></arg>
-    <arg rep='repeat'><replaceable>files</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -272,6 +273,16 @@ integer is acceptable.  Case of the string is significant.</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>The following elements of Freshmeat project metadata cannot yet
+be modified using this tool: <varname>name</varname>,
+<varname>translation list</varname>, <varname>programming
+language list</varname>, <varname>operating system
+list</varname>, <varname>approved screenshots</varname>,
+and dependency records.</para>
+
+<para>Support for updating all these elements except
+<varname>name</varname> is planned in future releases.</para>
 </refsect1>
 
 <refsect1><title>USAGE</title>
@@ -304,7 +315,8 @@ installation with Fedora updates to *validated* XML-DocBook.
 data API significantly. While we have attempted to maintain backward
 compatibility, the data model has changed in significant ways.</para>
 
-<para>There is not as yet any way to withdraw a release.</para>
+<para>There is not as yet any way to withdraw a release. This is
+scheduled to be added to Freshmeat soon.</para>
 
 <para>There is no longer a Branch attribute.</para>
 
@@ -314,13 +326,7 @@ pragram will validate it and use it to fill in the project tags list.</para>
 <para>The old License field is now License-List and can take a
 comma-separated list of licenses.</para>
 
-<para>The old Home-Page-URL is now Website-URL to match the convention
-used by the new API.</para>
-
-<para>The old Gzipped-Tar-URL is now Tar/GZ-URL to match the convention
-used by the new API.</para>
-
-<para>All the other special-case URL fields are gone.  They're replaced by
+<para>All the old URL fields are gone.  They're replaced by
 the general mechanism for pairing URLs with labels.</para>
 
 <para>Earlier versions parsed RPM specfiles. This was poor

@@ -30,7 +30,7 @@ freshmeat-submit-$(VERS).tar.gz: $(SOURCES) freshmeat-submit.1
 	(cd ..; rm freshmeat-submit-$(VERS))
 
 clean:
-	rm -f freshmeat-submit.html *~
+	rm -f freshmeat-submit.html freshmeat-submit.1 *~
 
 dist: freshmeat-submit-$(VERS).tar.gz
 
