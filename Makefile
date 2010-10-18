@@ -30,9 +30,9 @@ freshmeat-submit-$(VERS).tar.gz: $(SOURCES) freshmeat-submit.1
 	(cd ..; rm freshmeat-submit-$(VERS))
 
 clean:
-	rm -f *.html freshmeat-submit.1 *~
+	rm -f *.html freshmeat-submit.1 MANIFEST ChangeLog SHIPPER.* *~
 
 dist: freshmeat-submit-$(VERS).tar.gz
 
 release: freshmeat-submit-$(VERS).tar.gz freshmeat-submit.html
-	shipper -f; rm -f CHANGES ANNOUNCE* *.6 *.html *.rpm *.lsm MANIFEST
+	shipper; make clean
