@@ -1,5 +1,5 @@
 Name: freshmeat-submit
-Version: 2.0
+Version: 2.1
 Release: 1
 URL: http://www.catb.org/~esr/freshmeat-submit/
 Source0: %{name}-%{version}.tar.gz
