@@ -1,0 +1,24 @@
+		freshmeat project release news
+
+Mon Oct 17 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.0
+  Updated to work with the JSON-based 3.0 freshmeat.net API.
+  Major rewrite and simplification of the code.
+
+Mon Aug  2 2004 Eric S. Raymond <esr@snark.thyrsus.com> - 1.6
+  Documentation and packaging fixes.
+
+Fri Apr 30 2004 Eric S. Raymond <esr@snark.thyrsus.com> 1.5
+  Fix documentation bug, add note about .netrc.
+
+Wed Dec 31 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.4
+  Fix bug in processing of text foci indicators.
+
+Mon Dec 29 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.3
+  Fix typo affecting the RPM field.
+
+Wed Dec 24 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.2
+  Add validation using the new server methods for fetching foci and license
+  types.
+
+Mon Dec 22 2003 Eric S. Raymond <esr@snark.thyrsus.com> 1.1
+  Fix typos in documentation and some untested methods.
