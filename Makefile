@@ -35,4 +35,4 @@ clean:
 dist: freshmeat-submit-$(VERS).tar.gz
 
 release: freshmeat-submit-$(VERS).tar.gz freshmeat-submit.html
-	shipper -m -t; make clean
+	shipper -u -m -t; make clean
