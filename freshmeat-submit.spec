@@ -3,7 +3,7 @@ Version: 2.1
 Release: 1
 URL: http://www.catb.org/~esr/freshmeat-submit/
 Source0: %{name}-%{version}.tar.gz
-License: GPL 
+License: BSD
 Group: Applications/System
 Requires: python
 Summary: submit release information to freshmeat.net
