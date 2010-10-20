@@ -153,12 +153,11 @@ class FreshmeatSession:
                                   "POST",
                                   {"url" : {"label": label, "location" : url}})
         # Delete URLs that weren't in the update list
-        # FIXME: This cannot work yet: there's no auth code!
         remove = set(permadict.keys()) - set(lambda x: x[0], urlassoc)
-        #for label in remove:
-        #    self.edit_request("projects/%s/urls/%s.json"
-        #                          % (self.permalink, permadict[label]),
-        #                          "DELETE")
+        for label in remove:
+            self.edit_request("projects/%s/urls/%s.json?auth_code=%s"
+                                  % (self.permalink, permadict[label], self.auth),
+                                  "DELETE")
 class FreshmeatMetadataFactory:
     "Factory class for producing Freshmeat records in JSON."
     freshmeat_field_map = (
