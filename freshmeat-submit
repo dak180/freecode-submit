@@ -153,11 +153,11 @@ class FreshmeatSession:
                                   "POST",
                                   {"url" : {"label": label, "location" : url}})
         # Delete URLs that weren't in the update list
-        remove = set(permadict.keys()) - set(lambda x: x[0], urlassoc)
+        remove = set(permadict.keys()) - set(map(lambda x: x[0], urlassoc))
         for label in remove:
             self.edit_request("projects/%s/urls/%s.json?auth_code=%s"
                                   % (self.permalink, permadict[label], self.auth),
-                                  "DELETE")
+                                  "DELETE", {})
 class FreshmeatMetadataFactory:
     "Factory class for producing Freshmeat records in JSON."
     freshmeat_field_map = (
