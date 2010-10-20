@@ -18,6 +18,7 @@
 
 <cmdsynopsis>
   <command>freshmeat-submit</command>
+    <arg>-q</arg>
     <arg>-V</arg>
     <arg>-n</arg>
     <arg>-N</arg>
@@ -45,6 +46,14 @@ API.</para>
 <application>freshmeat-submit</application> itself.</para>
 
 <variablelist>
+<varlistentry>
+<term>-q, --query</term>
+<listitem>
+<para>Query the specified project. Delivers to standard output a job
+card describing the project metadata that can be edited and fed back
+to this tool.</para>
+</listitem>
+</varlistentry>
 <varlistentry>
 <term>-d, --delete</term>
 <listitem>

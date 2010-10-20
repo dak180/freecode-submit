@@ -311,8 +311,11 @@ if __name__ == "__main__":
         session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)
         session.on_project(update.name)
         if options.query:
-            print "Querying %s: not yet supported." % options.query
-            print session.project_data
+            print "Project: %s" % session.project_data["name"]
+            print "Summary: %s" % session.project_data["oneliner"]
+            print "Description: %s" % session.project_data["description"].replace("\n", "\n    ").rstrip()
+            print "License-List: %s" % ",".join(session.project_data["license_list"])
+            print "Project-Tag-List: %s" % ",".join(session.project_data["tag_list"])
         else:
             # OK, now actually add or delete the release.
             if update.per_project:
