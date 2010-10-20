@@ -236,6 +236,7 @@ class FreshmeatMetadataFactory:
             for (key, value) in message.items():
                 value = re.sub("\n +", " ", value).strip()
                 if key.endswith("-URL"):
+                    key = key.replace("-", " ")
                     urls.update({key[:-4] : value})
                 else:
                     if key.endswith("List"):
