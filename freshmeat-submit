@@ -74,8 +74,8 @@ class FreshmeatSession:
                 % (self.project, self.auth)
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
-        content = content['project']
-        self.permalink = content['permalink'] 
+        self.project_data = content['project']
+        self.permalink = self.project_data['permalink'] 
 
     def edit_request(self, url, method, request):
         "Wrap a JSON object with the auth code and ship it as a request"
@@ -202,6 +202,8 @@ class FreshmeatMetadataFactory:
                                             "--" + msg_field.lower(),
                                             dest=rpc_field,
                                             help="Set the %s field"%msg_field)
+        self.argument_parser.add_option('-q', '--query', dest='query',
+                          help='Query metadata for PROJECT',metavar="PROJECT")
         self.argument_parser.add_option('-d', '--delete', dest='delete',
                           default=False, action='store_true',
                           help='Suppress reading fields from stdin.')
@@ -229,7 +231,7 @@ class FreshmeatMetadataFactory:
         (options, args) = self.argument_parser.parse_args()
         # Stuff from stdin if present
         prior_version = data.get("version")
-        if options.read:
+        if not options.query and options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 value = re.sub("\n +", " ", value).strip()
@@ -247,7 +249,7 @@ class FreshmeatMetadataFactory:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
-        controls = ('read', 'delete', 'no-stdin', 'dryrun', 'verbose')
+        controls = ('query', 'delete', 'read', 'dryrun', 'verbose')
         prior_version = data.get("version")
         for (key, value) in options.__dict__.items():
             if key not in controls and value != None:
@@ -278,16 +280,19 @@ class FreshmeatMetadataFactory:
             urllist.append((label, furl))
         # Sort out what things go where 
         update = Update()
-        update.name = data.pop('name')
-        update.urlassoc = urllist
-        for (k, v) in data.items():
-            if k in FreshmeatMetadataFactory.projectwide:
-                # Hack to get around a namespace collision
-                if k == "project_release_tag":
-                    k = "release_tag"
-                update.per_project[k] = v
-            else:
-                update.per_release[k] = v
+        if options.query:
+            update.name = options.query
+        else:
+            update.name = data.pop('name')
+            update.urlassoc = urllist
+            for (k, v) in data.items():
+                if k in FreshmeatMetadataFactory.projectwide:
+                    # Hack to get around a namespace collision
+                    if k == "project_release_tag":
+                        k = "release_tag"
+                    update.per_project[k] = v
+                else:
+                    update.per_release[k] = v
         # Return this
         return (options, update)
 
@@ -297,6 +302,7 @@ if __name__ == "__main__":
         factory = FreshmeatMetadataFactory()
         (options, update) = factory.getMetadata(sys.stdin)
         # Some switches shouldn't be passed to the server
+        query = 'query' in options.__dict__ and options.query
         verbose = 'verbose' in options.__dict__ and options.verbose
         delete  = 'delete' in options.__dict__ and options.delete
         dryrun  = 'dryrun' in options.__dict__ and options.dryrun
@@ -304,16 +310,20 @@ if __name__ == "__main__":
         # Establish session
         session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)
         session.on_project(update.name)
-        # OK, now actually add or delete the release.
-        if update.per_project:
-            session.update_core(update.per_project)
-        if update.urlassoc:
-            session.update_urls(update.urlassoc)
-        if update.per_release and update.per_release.keys() != ["version"]:
-            if delete:
-                session.withdraw_release(update['version'])
-            else:
-                session.publish_release(update.per_release)
+        if options.query:
+            print "Querying %s: not yet supported." % options.query
+            print session.project_data
+        else:
+            # OK, now actually add or delete the release.
+            if update.per_project:
+                session.update_core(update.per_project)
+            if update.urlassoc:
+                session.update_urls(update.urlassoc)
+            if update.per_release and update.per_release.keys()!=["version"]:
+                if delete:
+                    session.withdraw_release(update['version'])
+                else:
+                    session.publish_release(update.per_release)
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
