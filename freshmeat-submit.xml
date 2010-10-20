@@ -51,7 +51,8 @@ API.</para>
 <listitem>
 <para>Query the specified project. Delivers to standard output a job
 card describing the project metadata that can be edited and fed back
-to this tool.</para>
+to this tool. The data with release rather than project scope is for
+the most recent release.</para>
 </listitem>
 </varlistentry>
 <varlistentry>
