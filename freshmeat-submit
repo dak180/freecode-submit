@@ -316,6 +316,8 @@ if __name__ == "__main__":
             print "Description: %s" % session.project_data["description"].replace("\n", "\n    ").rstrip()
             print "License-List: %s" % ",".join(session.project_data["license_list"])
             print "Project-Tag-List: %s" % ",".join(session.project_data["tag_list"])
+            for assoc in session.project_data['approved_urls']:
+                print "%s-URL: %s" % (assoc["label"].replace(" ","-"), assoc["redirector"])
         else:
             # OK, now actually add or delete the release.
             if update.per_project:
