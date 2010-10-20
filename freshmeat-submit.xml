@@ -234,7 +234,15 @@ of how to set frequently-used URL types:</para>
 <row>
   <entry>Website-URL:</entry>
   <entry>Website</entry>
-  <entry>Project website home page</entry>
+  <entry>Project website home page.  If you specify this, it will be used to 
+  activate the "More Information" link and Home icon on the project page.</entry>
+</row>
+
+<row>
+  <entry>Download-URL:</entry>
+  <entry>Download</entry>
+  <entry>Preferred download URL.  If you specify this, it will be used to 
+  activate the "Download" link anf foppy-disk on the project page.</entry>
 </row>
 
 <row>
