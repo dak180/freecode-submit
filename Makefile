@@ -26,7 +26,7 @@ uninstall:
 freshmeat-submit-$(VERS).tar.gz: $(SOURCES) freshmeat-submit.1
 	find $(SOURCES) freshmeat-submit.1 -type f | sed "s:^:freshmeat-submit-$(VERS)/:" >MANIFEST
 	(cd ..; ln -s freshmeat-submit freshmeat-submit-$(VERS))
-	(cd ..; tar -czvf freshmeat-submit/freshmeat-submit-$(VERS).tar.gz `cat freshmeat-submit/MANIFEST`)
+	(cd ..; tar -czf freshmeat-submit/freshmeat-submit-$(VERS).tar.gz `cat freshmeat-submit/MANIFEST`)
 	(cd ..; rm freshmeat-submit-$(VERS))
 
 clean:

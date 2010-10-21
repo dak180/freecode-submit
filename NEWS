@@ -1,5 +1,11 @@
 		freshmeat project release news
 
+Thu Oct 21 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1
+  Now has a query mode that can retrieve project metadata in editable form.
+  Properly deletes URLs not present in your update list.
+  Request withdrawal is implemented.
+  License changed to BSD.
+
 Mon Oct 17 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.0
   Updated to work with the JSON-based 3.0 freshmeat.net API.
   Major rewrite and simplification of the code.
