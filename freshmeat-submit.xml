@@ -269,7 +269,7 @@ of how to set frequently-used URL types:</para>
 </informaltable>
 
 <para>Note that the list of URLs you ship does not merely add to the 
-existing list but overwrites it - thjat is how you delete old URLs
+existing list but overwrites it - that is how you delete old URLs
 which are no longer valid.</para>
 
 <para>The Summary, Description, License-List, Project-Tag-List and all
