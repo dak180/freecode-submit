@@ -39,8 +39,10 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 
 %changelog
 * Wed Oct 20 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1-1
-- Now has a query mode thatr can retrieve project metadata in editable form.
-- Properly deletes URLs not present in an update list.
+- Now has a query mode that can retrieve project metadata in editable form.
+- Properly deletes URLs not present in your update list.
+- Request withdrawal is implemented.
+- License changed to BSD.
 
 * Mon Oct 17 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.0-1
 - Updated to work with the JSON-based 3.0 freshmeat.net API.

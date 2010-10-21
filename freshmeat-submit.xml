@@ -60,8 +60,8 @@ the most recent release.</para>
 <listitem>
 <para>Delete the specified release rather than submitting it.  With
 this option, all data other than Project and Release are
-ignored. Note: This is <emphasis role='bold'>not yet
-implemented</emphasis> in the 3.0 API; until it is, invoking
+ignored. Note: only works if the release has been submitted but not
+yet passed by a moderator; if the release is already posted, invoking
 this mode will throw an error.</para>
 </listitem>
 </varlistentry>
@@ -267,6 +267,10 @@ of how to set frequently-used URL types:</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>Note that the list of URLs you ship does not merely add to the 
+existing list but overwrites it - thjat is how you delete old URLs
+which are no longer valid.</para>
 
 <para>The Summary, Description, License-List, Project-Tag-List and all
 URL fields, when specified, actually change the record for the

@@ -76,6 +76,7 @@ class FreshmeatSession:
         content = json.loads(handle.read())
         self.project_data = content['project']
         self.permalink = self.project_data['permalink'] 
+        self.id = self.project_data['id'] 
 
     def edit_request(self, url, method, request):
         "Wrap a JSON object with the auth code and ship it as a request"
@@ -114,8 +115,8 @@ class FreshmeatSession:
         "Withdraw a specified release from the current project."
         if self.verbose:
             print "Withdrawing %s release: %s" % (self.project, release)
-        # When this is implemented, it will require a DELETE method
-        raise FreshmeatSessionException("Release removal is not yet implemented in the 3.0 API.")
+        deletelink = "projects/%s/releases/%s.json" % (self.permalink, self.id)
+        self.edit_request(deletelink, "DELETE", {})
 
     def update_core(self, coredata):
         "Update the core data for a project."
