@@ -11,6 +11,8 @@ class Update:
         self.per_project = {}
         self.urlassoc = []
         self.per_release = {}
+    def __repr__(self):
+        return "Update(" + repr(self.__dict__) + ")"
 
 # The Freshmeat API implementation is sensitive to the kind of HTTP request
 # method you use.  The general rule is:
@@ -257,7 +259,7 @@ class FreshmeatMetadataFactory:
             if key not in controls and value != None:
                 data[key] = value
                 del options.__dict__[key]
-        if data.get("version") != prior_version:
+        if data.get("version") != prior_version and not options.delete:
             raise FreshmeatSessionException("Version conflict in options.")
         # Hidden flag special handling
         if "hidden_from_frontpage" in data:
@@ -338,7 +340,7 @@ if __name__ == "__main__":
                 session.update_urls(update.urlassoc)
             if update.per_release and update.per_release.keys()!=["version"]:
                 if delete:
-                    session.withdraw_release(update['version'])
+                    session.withdraw_release(update.per_release['version'])
                 else:
                     session.publish_release(update.per_release)
     except FreshmeatSessionException, e:
