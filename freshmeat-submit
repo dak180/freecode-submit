@@ -2,7 +2,7 @@
 #
 # freshmeat-submit -- script transactions with the Freshmeat server
 
-import sys, re, urllib2, json, netrc, email.Parser, optparse, commands
+import sys, re, urllib2, json, netrc, email.Parser, optparse
 
 class Update:
     "Encapsulate dictionaries describing a project metadata update."
@@ -38,7 +38,7 @@ class RequestWithMethod(urllib2.Request):
         else:
             return "GET"
 
-class FreshmeatSessionException:
+class FreshmeatSessionException(Exception):
     def __init__(self, msg):
         self.msg = msg
 

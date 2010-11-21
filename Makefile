@@ -29,8 +29,14 @@ freshmeat-submit-$(VERS).tar.gz: $(SOURCES) freshmeat-submit.1
 	(cd ..; tar -czf freshmeat-submit/freshmeat-submit-$(VERS).tar.gz `cat freshmeat-submit/MANIFEST`)
 	(cd ..; rm freshmeat-submit-$(VERS))
 
+pychecker:
+	@echo "Expect: Object (data) has no attribute (update)"
+	@ln -f freshmeat-submit freshmeat-submit.py
+	@-pychecker --only --limit 50 freshmeat-submit.py
+	@rm -f freshmeat-submit.py
+
 clean:
-	rm -f *.html freshmeat-submit.1 MANIFEST ChangeLog SHIPPER.* *~
+	rm -f *.pyc *.html freshmeat-submit.1 MANIFEST ChangeLog SHIPPER.* *~
 
 dist: freshmeat-submit-$(VERS).tar.gz
 
