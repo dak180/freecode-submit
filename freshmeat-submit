@@ -77,6 +77,8 @@ class FreshmeatSession:
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
         self.project_data = content['project']
+        #if self.verbose:
+        #    print "Project data: %s" % self.project_data
         self.permalink = self.project_data['permalink'] 
         self.id = self.project_data['id'] 
 
@@ -338,11 +340,10 @@ if __name__ == "__main__":
                 session.update_core(update.per_project)
             if update.urlassoc:
                 session.update_urls(update.urlassoc)
-            if update.per_release and update.per_release.keys()!=["version"]:
-                if delete:
-                    session.withdraw_release(update.per_release['version'])
-                else:
-                    session.publish_release(update.per_release)
+            if delete:
+                session.withdraw_release(update.per_release['version'])
+            elif update.per_release and update.per_release.keys()!=["version"]:
+                session.publish_release(update.per_release)
     except FreshmeatSessionException, e:
         print >>sys.stderr,"freshmeat-submit:", e.msg
         sys.exit(1)
