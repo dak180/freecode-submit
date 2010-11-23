@@ -8,6 +8,7 @@ Group: Applications/System
 Requires: python
 Summary: submit release information to freshmeat.net
 BuildRoot: %{_tmppath}/%{name}-root
+#Logo: gold-mega.png
 
 %description
 freshmeat-submit is a script that supports remote submission of

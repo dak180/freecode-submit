@@ -1,4 +1,4 @@
-		freshmeat project release news
+		freshmeat-submit project release news
 
 Thu Oct 21 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1
   Now has a query mode that can retrieve project metadata in editable form.
