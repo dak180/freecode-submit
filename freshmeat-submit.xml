@@ -337,9 +337,6 @@ installation with Fedora updates to *validated* XML-DocBook.
 data API significantly. While we have attempted to maintain backward
 compatibility, the data model has changed in significant ways.</para>
 
-<para>There is not as yet any way to withdraw a release. This is
-scheduled to be added to Freshmeat soon.</para>
-
 <para>There is no longer a Branch attribute.</para>
 
 <para>The old Release-Focus field is gone.  As a special case, this
