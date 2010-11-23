@@ -21,6 +21,19 @@ class Update:
 # Adding new records:             POST
 # Updating existing records:      PUT
 # Deleting existing records:      DELETE
+#
+# From http://help.freshmeat.net/faqs/api-7/data-api-intro:
+# 200 OK - Request was successful, the requested content is included
+# 201 Created - Creation of a new resource was successful
+# 401 Unauthorized - You need to provide an authentication code with this
+#     request
+# 403 Forbidden - You don't have permission to access this URI
+# 404 Not Found - The requested resource was not found
+# 409 Conflict - The validation of your submitted data failed, please check
+#     the response body for error pointers
+# 500 Server Error - The request hit a problem and was aborted, please report
+#     as a bug if it persists
+# 503 Service Unavailable - You hit your API credit limit
 
 class RequestWithMethod(urllib2.Request):
     "Hack for forcing the method in a request - allows PUT and DELETE"
@@ -82,7 +95,7 @@ class FreshmeatSession:
         self.permalink = self.project_data['permalink'] 
         self.id = self.project_data['id'] 
 
-    def edit_request(self, url, method, request):
+    def edit_request(self, url, method="GET", request={}, force=False):
         "Wrap a JSON object with the auth code and ship it as a request"
         url = FreshmeatSession.server + url
         data = {"auth_code" : self.auth}
@@ -95,7 +108,7 @@ class FreshmeatSession:
         #    print "Request headers:", headers
         if self.verbose:
             print "Request data:", data
-        if self.emit_enable:
+        if self.emit_enable or force:
             req = RequestWithMethod(method=method,
                                     url=url,
                                     data=data,
@@ -103,9 +116,10 @@ class FreshmeatSession:
             handle = urllib2.urlopen(req)
             if self.verbose:
                 print handle.info()
-                content = handle.read()
-                if self.verbose:
-                    print "Response:", content
+            content = handle.read()
+            if self.verbose:
+                print "Response:", content
+            return content
 
     def publish_release(self, data):
         "Add a new release to the current project."
@@ -115,12 +129,22 @@ class FreshmeatSession:
                           "POST",
                           {"release": data})
 
-    def withdraw_release(self, release):
+    def withdraw_release(self, version):
         "Withdraw a specified release from the current project."
         if self.verbose:
-            print "Withdrawing %s release: %s" % (self.project, release)
-        deletelink = "projects/%s/releases/%s.json" % (self.permalink, self.id)
-        self.edit_request(deletelink, "DELETE", {})
+            print "Withdrawing %s release: %s" % (self.project, version)
+        releases = self.edit_request("projects/%s/releases.json" \
+                                     % self.permalink, force=True)
+        releases = json.loads(releases)
+        for release in releases:
+            properties = release["release"]
+            if properties.get("version") == version:
+                vid = properties["id"]
+                break
+        else:
+            raise FreshmeatSessionException("couldn't find release %s"%version) 
+        #deletelink = "projects/%s/releases/%s.json" % (self.permalink, vid)
+        #self.edit_request(deletelink, "DELETE", {})
 
     def update_core(self, coredata):
         "Update the core data for a project."
