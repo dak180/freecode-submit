@@ -179,7 +179,7 @@ class FreshmeatMetadataFactory:
         # We remap it below.
         ("Release-Focus",    "r", "release_focus"),          # Release
         )
-    # Conventional values for releae focus
+    # Conventional values for release focus
     focus_values = (
         "Initial freshmeat announcement",
         "Documentation",
