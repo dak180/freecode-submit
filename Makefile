@@ -1,6 +1,6 @@
 # Makefile for the freshmeat-submit tool
 
-VERS=$(shell sed <freshmeat-submeat -n -e '/version=\(.*\)/s//\1/p')
+VERS=$(shell sed <freshmeat-submit -n -e '/version="\(.*\)"/s//\1/p')
 
 CODE    = freshmeat-submit
 DOCS    = README AUTHORS freshmeat-submit.xml COPYING
