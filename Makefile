@@ -4,7 +4,7 @@ VERS=$(shell sed <freshmeat-submeat -n -e '/version=\(.*\)/s//\1/p')
 
 CODE    = freshmeat-submit
 DOCS    = README AUTHORS freshmeat-submit.xml COPYING
-SOURCES = $(CODE) $(DOCS) freshmeat-submit.spec Makefile gold-mega.png
+SOURCES = $(CODE) $(DOCS) Makefile control gold-mega.png
 
 all: freshmeat-submit.1
 
