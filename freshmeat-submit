@@ -133,18 +133,19 @@ class FreshmeatSession:
         "Withdraw a specified release from the current project."
         if self.verbose:
             print "Withdrawing %s release: %s" % (self.project, version)
-        releases = self.edit_request("projects/%s/releases.json" \
+        releases = self.edit_request("projects/%s/releases/pending.json" \
                                      % self.permalink, force=True)
         releases = json.loads(releases)
         for release in releases:
             properties = release["release"]
             if properties.get("version") == version:
                 vid = properties["id"]
+                print "I see", properties
                 break
         else:
             raise FreshmeatSessionException("couldn't find release %s"%version) 
-        #deletelink = "projects/%s/releases/%s.json" % (self.permalink, vid)
-        #self.edit_request(deletelink, "DELETE", {})
+        deletelink = "projects/%s/releases/%s.json" % (self.permalink, vid)
+        self.edit_request(deletelink, "DELETE", {})
 
     def update_core(self, coredata):
         "Update the core data for a project."
