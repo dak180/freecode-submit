@@ -1,5 +1,9 @@
 		freshmeat-submit project release news
 
+Thu Nov 24 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.2
+  Release withdrawal, previously broken, now works.
+  (This required a Freshmeat API change.)
+
 Thu Oct 21 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1
   Now has a query mode that can retrieve project metadata in editable form.
   Properly deletes URLs not present in your update list.

@@ -39,6 +39,9 @@ cp freshmeat-submit.1 "$RPM_BUILD_ROOT"%{_mandir}/man1/
 %{_bindir}/freshmeat-submit
 
 %changelog
+* Wed Nov 23 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.2-1
+- Fix buggy release withdrawal method.
+
 * Wed Oct 20 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1-1
 - Now has a query mode that can retrieve project metadata in editable form.
 - Properly deletes URLs not present in your update list.

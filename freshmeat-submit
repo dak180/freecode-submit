@@ -4,6 +4,8 @@
 
 import sys, re, urllib2, json, netrc, email.Parser, optparse
 
+version="2.2"
+
 class Update:
     "Encapsulate dictionaries describing a project metadata update."
     def __init__(self):
