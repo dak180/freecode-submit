@@ -1,7 +1,7 @@
 # This is not a real Debian control file, but the syntax is upward-compatible.
 # It's project metadata for the shipper tool
 
-Package: doclifter
+Package: freshmeat-submit
 
 Description: submit release information to freshmeat.net
  freshmeat-submit is a script that supports remote submission of
