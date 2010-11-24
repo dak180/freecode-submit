@@ -248,6 +248,9 @@ class FreshmeatMetadataFactory:
         self.argument_parser.add_option('-V', '--verbose', dest='verbose',
                           default=False, action='store_true',
                           help='Enable verbose debugging.')
+        self.argument_parser.add_option('-?', '--showversion', dest='showversion',
+                          default=False, action='store_true',
+                          help='Show version and quit.')
         
     def header_to_field(self, hdr):
         lhdr = hdr.lower().replace("-", "_")
@@ -263,7 +266,7 @@ class FreshmeatMetadataFactory:
         (options, args) = self.argument_parser.parse_args()
         # Stuff from stdin if present
         prior_version = data.get("version")
-        if not options.query and options.read:
+        if not (options.query or options.showversion) and options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 value = re.sub("\n +", " ", value).strip()
@@ -282,7 +285,7 @@ class FreshmeatMetadataFactory:
                 raise FreshmeatSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
-        controls = ('query', 'delete', 'read', 'dryrun', 'verbose')
+        controls = ('query', 'delete', 'read', 'dryrun', 'verbose', 'showversion')
         prior_version = data.get("version")
         for (key, value) in options.__dict__.items():
             if key not in controls and value != None:
@@ -313,7 +316,9 @@ class FreshmeatMetadataFactory:
             urllist.append((label, furl))
         # Sort out what things go where 
         update = Update()
-        if options.query:
+        if options.showversion:
+            pass
+        elif options.query:
             update.name = options.query
         else:
             update.name = data.pop('name')
@@ -339,6 +344,10 @@ if __name__ == "__main__":
         verbose = 'verbose' in options.__dict__ and options.verbose
         delete  = 'delete' in options.__dict__ and options.delete
         dryrun  = 'dryrun' in options.__dict__ and options.dryrun
+        showversion  = 'showversion' in options.__dict__ and options.showversion
+        if showversion:
+            print "freshmeat-submit", version
+            raise SystemExit, 0
         # Time to ship the update.
         # Establish session
         session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)

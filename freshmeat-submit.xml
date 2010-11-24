@@ -23,6 +23,7 @@
     <arg>-n</arg>
     <arg>-N</arg>
     <arg>-d</arg>
+    <arg>--showversion</arg>
     <arg><replaceable>data-options</replaceable></arg>
     <arg rep='repeat'><replaceable>data-options</replaceable></arg>
 </cmdsynopsis>
@@ -86,6 +87,12 @@ requests which read data from Freshmeat in order to get permalink data.
 <listitem>
 <para>Enable verbose debugging of the transaction.  This
 option is mainly for developers.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>--showversion</term>
+<listitem>
+<para>Show the version of this program and exit.</para>
 </listitem>
 </varlistentry>
 </variablelist>
