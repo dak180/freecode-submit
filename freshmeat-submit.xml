@@ -383,6 +383,13 @@ is not world-readable; we recommend doing <command>chmod 600
 </variablelist>
 
 </refsect1>
+<refsect1><title>BUGS</title>
+
+<para>The URLs returned in a project metadata query are Freshmeat redirectors,
+not the actual URLS supplied by previous project updates.  This is due to
+a limitation in the Freshmeat API which may be fixed in future versions
+of that API.</para>
+</refsect1>
 <refsect1><title>RETURN VALUES</title>
 
 <para>0 on success, 1 on failure.  In case of failure, any error message
