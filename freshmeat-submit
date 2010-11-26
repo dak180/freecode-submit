@@ -359,6 +359,15 @@ if __name__ == "__main__":
             print "License-List: %s" % ",".join(session.project_data["license_list"])
             print "Project-Tag-List: %s" % ",".join(session.project_data["tag_list"])
             for assoc in session.project_data['approved_urls']:
+                #print "Querying", assoc["redirector"]
+                #req = RequestWithMethod(method="HEAD",
+                #                        url=assoc["redirector"],
+                #                        data={},
+                #                        headers={})
+                #handle = urllib2.urlopen(req)
+                #print "==="
+                #print handle.info()
+                #print "==="
                 print "%s-URL: %s" % (assoc["label"].replace(" ","-"), assoc["redirector"])
             if 'recent_releases' in session.project_data:
                 most_recent = session.project_data['recent_releases'][0]
