@@ -10,6 +10,8 @@ Description: submit release information to freshmeat.net
  RFC-2822-like message on standard input, possibly with overrides by
  command-line switches.
 
+XBS-Destinations: freshmeat
+
 Homepage: http://www.catb.org/~esr/freshmeat-submit
 
 XBS-Logo: gold-mega.png
