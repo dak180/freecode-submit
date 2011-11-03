@@ -24,7 +24,7 @@ class Update:
 # Updating existing records:      PUT
 # Deleting existing records:      DELETE
 #
-# From http://help.freecode.net/faqs/api-7/data-api-intro:
+# From http://help.freecode.com/faqs/api-7/data-api-intro:
 # 200 OK - Request was successful, the requested content is included
 # 201 Created - Creation of a new resource was successful
 # 401 Unauthorized - You need to provide an authentication code with this
@@ -59,7 +59,7 @@ class FreecodeSessionException(Exception):
 
 class FreecodeSession:
     "Encapsulate the state of a Freecode API session."
-    server = "http://freecode.net/"
+    server = "http://freecode.com/"
 
     def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freecode session credentials."
