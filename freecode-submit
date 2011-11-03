@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 #
-# freshmeat-submit -- script transactions with the Freshmeat server
+# freecode-submit -- script transactions with the Freecode server
 
 import sys, re, urllib2, json, netrc, email.Parser, optparse
 
-version="2.2"
+version="2.3"
 
 class Update:
     "Encapsulate dictionaries describing a project metadata update."
@@ -16,7 +16,7 @@ class Update:
     def __repr__(self):
         return "Update(" + repr(self.__dict__) + ")"
 
-# The Freshmeat API implementation is sensitive to the kind of HTTP request
+# The Freecode API implementation is sensitive to the kind of HTTP request
 # method you use.  The general rule is:
 #
 # Reading records:                GET
@@ -24,7 +24,7 @@ class Update:
 # Updating existing records:      PUT
 # Deleting existing records:      DELETE
 #
-# From http://help.freshmeat.net/faqs/api-7/data-api-intro:
+# From http://help.freecode.net/faqs/api-7/data-api-intro:
 # 200 OK - Request was successful, the requested content is included
 # 201 Created - Creation of a new resource was successful
 # 401 Unauthorized - You need to provide an authentication code with this
@@ -53,16 +53,16 @@ class RequestWithMethod(urllib2.Request):
         else:
             return "GET"
 
-class FreshmeatSessionException(Exception):
+class FreecodeSessionException(Exception):
     def __init__(self, msg):
         self.msg = msg
 
-class FreshmeatSession:
-    "Encapsulate the state of a Freshmeat API session."
-    server = "http://freshmeat.net/"
+class FreecodeSession:
+    "Encapsulate the state of a Freecode API session."
+    server = "http://freecode.net/"
 
     def __init__(self, auth=None, verbose=0, emit_enable=True):
-        "Initialize Freshmeat session credentials."
+        "Initialize Freecode session credentials."
         self.auth = auth
         self.verbose = verbose
         self.emit_enable = emit_enable
@@ -72,22 +72,22 @@ class FreshmeatSession:
             try:
                 credentials = netrc.netrc()
             except netrc.NetrcParseError, e:
-                raise FreshmeatSessionException("ill-formed .netrc: %s:%s %s" \
+                raise FreecodeSessionException("ill-formed .netrc: %s:%s %s" \
                                                % (e.filename, e.lineno, e.msg))
             except IOError, e:
-                raise FreshmeatSessionException(("missing .netrc file %s" % \
+                raise FreecodeSessionException(("missing .netrc file %s" % \
                                                  str(e).split()[-1]))
-            ret = credentials.authenticators("freshmeat")
+            ret = credentials.authenticators("freecode")
             if not ret:
-                raise FreshmeatSessionException("no credentials for Freshmeat")
+                raise FreecodeSessionException("no credentials for Freecode")
             login, self.auth, password = ret
 
     def on_project(self, name):
-        "Select project by Freshmeat shortname."
+        "Select project by Freecode shortname."
         if self.verbose:
             print "Selecting project: %s" % name
         self.project = name
-        query = FreshmeatSession.server + "projects/%s.json?auth_code=%s" \
+        query = FreecodeSession.server + "projects/%s.json?auth_code=%s" \
                 % (self.project, self.auth)
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
@@ -99,7 +99,7 @@ class FreshmeatSession:
 
     def edit_request(self, url, method="GET", request={}, force=False):
         "Wrap a JSON object with the auth code and ship it as a request"
-        url = FreshmeatSession.server + url
+        url = FreecodeSession.server + url
         data = {"auth_code" : self.auth}
         data.update(request)
         data = json.dumps(data)
@@ -145,7 +145,7 @@ class FreshmeatSession:
                 print "I see", properties
                 break
         else:
-            raise FreshmeatSessionException("couldn't find release %s"%version) 
+            raise FreecodeSessionException("couldn't find release %s"%version) 
         deletelink = "projects/%s/releases/%s.json" % (self.permalink, vid)
         self.edit_request(deletelink, "DELETE", {})
 
@@ -162,7 +162,7 @@ class FreshmeatSession:
         if self.verbose:
             print "URL list update for %s is: %s" % (self.project, urlassoc)
         # First, get permalinks for all existing URLs
-        query = FreshmeatSession.server + "projects/%s/urls.json?auth_code=%s" \
+        query = FreecodeSession.server + "projects/%s/urls.json?auth_code=%s" \
                 % (self.permalink, self.auth)
         handle = urllib2.urlopen(query)
         content = json.loads(handle.read())
@@ -190,9 +190,9 @@ class FreshmeatSession:
             self.edit_request("projects/%s/urls/%s.json?auth_code=%s"
                                   % (self.permalink, permadict[label], self.auth),
                                   "DELETE", {})
-class FreshmeatMetadataFactory:
-    "Factory class for producing Freshmeat records in JSON."
-    freshmeat_field_map = (
+class FreecodeMetadataFactory:
+    "Factory class for producing Freecode records in JSON."
+    freecode_field_map = (
         ("Project",          "P", "name"),                   # Project
         ("Summary",          "S", "oneliner"),               # Project
         ("Description",      "D", "description"),            # Project
@@ -202,13 +202,13 @@ class FreshmeatMetadataFactory:
         ("Changes",          "c", "changelog"),              # Release
         ("Hide",             "x", "hidden_from_frontpage"),  # Release
         ("Release-Tag-List", "t", "tag_list"),               # Release
-        # Note: Release Focus is no longer a real Freshmeat field.
+        # Note: Release Focus is no longer a real Freecode field.
         # We remap it below.
         ("Release-Focus",    "r", "release_focus"),          # Release
         )
     # Conventional values for release focus
     focus_values = (
-        "Initial freshmeat announcement",
+        "Initial freecode announcement",
         "Documentation",
         "Code cleanup",
         "Minor feature enhancements",
@@ -229,7 +229,7 @@ class FreshmeatMetadataFactory:
         self.message_parser = email.Parser.Parser()
         self.argument_parser = optparse.OptionParser( \
             usage="usage: %prog [options]")
-        for (msg_field, shortopt, rpc_field) in FreshmeatMetadataFactory.freshmeat_field_map:
+        for (msg_field, shortopt, rpc_field) in FreecodeMetadataFactory.freecode_field_map:
             self.argument_parser.add_option("-" + shortopt,
                                             "--" + msg_field.lower(),
                                             dest=rpc_field,
@@ -254,10 +254,10 @@ class FreshmeatMetadataFactory:
         
     def header_to_field(self, hdr):
         lhdr = hdr.lower().replace("-", "_")
-        for (alias, shortopt, field) in FreshmeatMetadataFactory.freshmeat_field_map:
+        for (alias, shortopt, field) in FreecodeMetadataFactory.freecode_field_map:
             if lhdr == alias.lower().replace("-", "_").replace("/", "_"):
                 return field
-        raise FreshmeatSessionException("Illegal field name %s" % hdr)
+        raise FreecodeSessionException("Illegal field name %s" % hdr)
 
     def getMetadata(self, stream):
         "Return an Update object describing project and release attributes."
@@ -282,7 +282,7 @@ class FreshmeatMetadataFactory:
                 if payload:
                     data['changelog'] = payload + "\n"
             if prior_version and data.get("version") != prior_version:
-                raise FreshmeatSessionException("Version conflict on stdin.")
+                raise FreecodeSessionException("Version conflict on stdin.")
         # Merge in options from the command line;
         # they override what's on stdin.
         controls = ('query', 'delete', 'read', 'dryrun', 'verbose', 'showversion')
@@ -292,16 +292,16 @@ class FreshmeatMetadataFactory:
                 data[key] = value
                 del options.__dict__[key]
         if data.get("version") != prior_version and not options.delete:
-            raise FreshmeatSessionException("Version conflict in options.")
+            raise FreecodeSessionException("Version conflict in options.")
         # Hidden flag special handling
         if "hidden_from_frontpage" in data:
             data["hidden_from_frontpage"] = data["hidden_from_frontpage"] in ("Y", "y") 
         # Release-Focus field special handling.
         if "release_focus" in data:
             if data["release_focus"] in '123456789':
-                data["release_focus"] = FreshmeatMetadataFactory.focus_values[int(data["release_focus"])-1]
-            if data["release_focus"] not in FreshmeatMetadataFactory.focus_values:
-                raise FreshmeatSessionException("Invalid release focus")
+                data["release_focus"] = FreecodeMetadataFactory.focus_values[int(data["release_focus"])-1]
+            if data["release_focus"] not in FreecodeMetadataFactory.focus_values:
+                raise FreecodeSessionException("Invalid release focus")
             if "tag_list" not in data:
                 data["tag_list"] = data["release_focus" ]
             else:
@@ -324,7 +324,7 @@ class FreshmeatMetadataFactory:
             update.name = data.pop('name')
             update.urlassoc = urllist
             for (k, v) in data.items():
-                if k in FreshmeatMetadataFactory.projectwide:
+                if k in FreecodeMetadataFactory.projectwide:
                     # Hack to get around a namespace collision
                     if k == "project_release_tag":
                         k = "release_tag"
@@ -337,7 +337,7 @@ class FreshmeatMetadataFactory:
 if __name__ == "__main__":
     try:
         # First, gather update data from stdin and command-line switches
-        factory = FreshmeatMetadataFactory()
+        factory = FreecodeMetadataFactory()
         (options, update) = factory.getMetadata(sys.stdin)
         # Some switches shouldn't be passed to the server
         query = 'query' in options.__dict__ and options.query
@@ -346,11 +346,11 @@ if __name__ == "__main__":
         dryrun  = 'dryrun' in options.__dict__ and options.dryrun
         showversion  = 'showversion' in options.__dict__ and options.showversion
         if showversion:
-            print "freshmeat-submit", version
+            print "freecode-submit", version
             raise SystemExit, 0
         # Time to ship the update.
         # Establish session
-        session = FreshmeatSession(verbose=int(verbose), emit_enable=not dryrun)
+        session = FreecodeSession(verbose=int(verbose), emit_enable=not dryrun)
         session.on_project(update.name)
         if options.query:
             print "Project: %s" % session.project_data["name"]
@@ -389,15 +389,15 @@ if __name__ == "__main__":
                 session.withdraw_release(update.per_release['version'])
             elif update.per_release and update.per_release.keys()!=["version"]:
                 session.publish_release(update.per_release)
-    except FreshmeatSessionException, e:
-        print >>sys.stderr,"freshmeat-submit:", e.msg
+    except FreecodeSessionException, e:
+        print >>sys.stderr,"freecode-submit:", e.msg
         sys.exit(1)
     except urllib2.HTTPError, f:
-        print >>sys.stderr,"freshmeat-submit: HTTPError %s" %  (f.code)
+        print >>sys.stderr,"freecode-submit: HTTPError %s" %  (f.code)
         print >>sys.stderr,f.read()
         sys.exit(1)
     except urllib2.URLError, f:
-        print >>sys.stderr,"freshmeat-submit: URLError %s" %  (f.reason,)
+        print >>sys.stderr,"freecode-submit: URLError %s" %  (f.reason,)
         print >>sys.stderr,f.read()
         sys.exit(1)
 

@@ -1,8 +1,12 @@
-		freshmeat-submit project release news
+		freecode-submit project release news
+
+Thu Nov 03 2011 Eric S. Raymond <esr@snark.thyrsus.com> - 2.3
+  Deal with the Freshmeat to Freecode name change.
+  Means the name of this tool has to change.
 
 Thu Nov 24 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.2
   Release withdrawal, previously broken, now works.
-  (This required a Freshmeat API change.)
+  (This required a site API change.)
 
 Thu Oct 21 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1
   Now has a query mode that can retrieve project metadata in editable form.
@@ -11,7 +15,7 @@ Thu Oct 21 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.1
   License changed to BSD.
 
 Mon Oct 17 2010 Eric S. Raymond <esr@snark.thyrsus.com> - 2.0
-  Updated to work with the JSON-based 3.0 freshmeat.net API.
+  Updated to work with the JSON-based 3.0 API.
   Major rewrite and simplification of the code.
 
 Mon Aug  2 2004 Eric S. Raymond <esr@snark.thyrsus.com> - 1.6

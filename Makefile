@@ -1,44 +1,44 @@
-# Makefile for the freshmeat-submit tool
+# Makefile for the freecode-submit tool
 
-VERS=$(shell sed <freshmeat-submit -n -e '/version="\(.*\)"/s//\1/p')
+VERS=$(shell sed <freecode-submit -n -e '/version="\(.*\)"/s//\1/p')
 
-CODE    = freshmeat-submit
-DOCS    = README AUTHORS freshmeat-submit.xml COPYING
+CODE    = freecode-submit
+DOCS    = README AUTHORS freecode-submit.xml COPYING
 SOURCES = $(CODE) $(DOCS) Makefile control gold-mega.png
 
-all: freshmeat-submit.1
+all: freecode-submit.1
 
-freshmeat-submit.1: freshmeat-submit.xml
-	xmlto man freshmeat-submit.xml
+freecode-submit.1: freecode-submit.xml
+	xmlto man freecode-submit.xml
 
-freshmeat-submit.html: freshmeat-submit.xml
-	xmlto html-nochunks freshmeat-submit.xml
+freecode-submit.html: freecode-submit.xml
+	xmlto html-nochunks freecode-submit.xml
 
-install: freshmeat-submit.1 uninstall
-	cp freshmeat-submit ${ROOT}/usr/bin/freshmeat-submit 
+install: freecode-submit.1 uninstall
+	cp freecode-submit ${ROOT}/usr/bin/freecode-submit 
 	install -m 755 -o 0 -g 0 -d $(ROOT)/usr/share/man/man1/
-	install -m 755 -o 0 -g 0 freshmeat-submit.1 $(ROOT)/usr/share/man/man1/freshmeat-submit.1
+	install -m 755 -o 0 -g 0 freecode-submit.1 $(ROOT)/usr/share/man/man1/freecode-submit.1
 
 uninstall:
-	rm -f ${ROOT}/usr/bin/freshmeat-submit 
-	rm -f ${ROOT}/usr/share/man/man1/freshmeat-submit.1
+	rm -f ${ROOT}/usr/bin/freecode-submit 
+	rm -f ${ROOT}/usr/share/man/man1/freecode-submit.1
 
-freshmeat-submit-$(VERS).tar.gz: $(SOURCES) freshmeat-submit.1
-	find $(SOURCES) freshmeat-submit.1 -type f | sed "s:^:freshmeat-submit-$(VERS)/:" >MANIFEST
-	(cd ..; ln -s freshmeat-submit freshmeat-submit-$(VERS))
-	(cd ..; tar -czf freshmeat-submit/freshmeat-submit-$(VERS).tar.gz `cat freshmeat-submit/MANIFEST`)
-	(cd ..; rm freshmeat-submit-$(VERS))
+freecode-submit-$(VERS).tar.gz: $(SOURCES) freecode-submit.1
+	find $(SOURCES) freecode-submit.1 -type f | sed "s:^:freecode-submit-$(VERS)/:" >MANIFEST
+	(cd ..; ln -s freecode-submit freecode-submit-$(VERS))
+	(cd ..; tar -czf freecode-submit/freecode-submit-$(VERS).tar.gz `cat freecode-submit/MANIFEST`)
+	(cd ..; rm freecode-submit-$(VERS))
 
 pychecker:
 	@echo "Expect: Object (data) has no attribute (update)"
-	@ln -f freshmeat-submit freshmeat-submit.py
-	@-pychecker --only --limit 50 freshmeat-submit.py
-	@rm -f freshmeat-submit.py
+	@ln -f freecode-submit freecode-submit.py
+	@-pychecker --only --limit 50 freecode-submit.py
+	@rm -f freecode-submit.py
 
 clean:
-	rm -f *.pyc *.html freshmeat-submit.1 MANIFEST ChangeLog SHIPPER.* *~
+	rm -f *.pyc *.html freecode-submit.1 MANIFEST ChangeLog SHIPPER.* *~
 
-dist: freshmeat-submit-$(VERS).tar.gz
+dist: freecode-submit-$(VERS).tar.gz
 
-release: freshmeat-submit-$(VERS).tar.gz freshmeat-submit.html
+release: freecode-submit-$(VERS).tar.gz freecode-submit.html
 	shipper -u -m -t; make clean

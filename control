@@ -1,18 +1,18 @@
 # This is not a real Debian control file, but the syntax is upward-compatible.
 # It's project metadata for the shipper tool
 
-Package: freshmeat-submit
+Package: freecode-submit
 
-Description: submit release information to freshmeat.net
- freshmeat-submit is a script that supports remote submission of
- release updates to Freshmeat via its JSON API.  It is intended for use
+Description: submit release information to freecode.net
+ freecode-submit is a script that supports remote submission of
+ release updates to Freecode via its JSON API.  It is intended for use
  in project release scripts.  It reads the metadata from an
  RFC-2822-like message on standard input, possibly with overrides by
  command-line switches.
 
-XBS-Destinations: freshmeat
+XBS-Destinations: freecode
 
-Homepage: http://www.catb.org/~esr/freshmeat-submit
+Homepage: http://www.catb.org/~esr/freecode-submit
 
 XBS-Logo: gold-mega.png
 

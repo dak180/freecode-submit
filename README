@@ -1,7 +1,11 @@
-			freshmeat-submit
+			freecode-submit
 
-freshmeat-submit is a script that supports remote submitssion of release 
-updates to Freshmeat via its XML-RPC interface.  It is intended for use
+freecode-submit is a script that supports remote submitssion of release 
+updates to Freecode via its XML-RPC interface.  It is intended for use
 in project release scripts.
+
+(This project was formerly called freshmeat-submit.  It changed its name
+in 2011 when Freecode did.)
+
 							Eric S, Raymond
 							December 2003
