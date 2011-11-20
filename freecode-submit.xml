@@ -341,7 +341,8 @@ installation with Fedora updates to *validated* XML-DocBook.
 
 <refsect1><title>WARNING</title>
 <para>Since this program was first written, Freecode has changed its
-data API significantly. While we have attempted to maintain backward
+data API significantly (and its name, too; it used to be
+'Freshmeat'). While we have attempted to maintain backward
 compatibility, the data model has changed in significant ways.</para>
 
 <para>There is no longer a Branch attribute.</para>
@@ -373,6 +374,7 @@ this:</para>
 <screen>
 machine freecode
      account &lt;your_api_auth_code&gt;
+     password none
 </screen>
 
 <para>For security, make sure your <filename>~/.netrc</filename> file

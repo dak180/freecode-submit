@@ -15,13 +15,13 @@ freecode-submit.html: freecode-submit.xml
 	xmlto html-nochunks freecode-submit.xml
 
 install: freecode-submit.1 uninstall
-	cp freecode-submit ${ROOT}/usr/bin/freecode-submit 
-	install -m 755 -o 0 -g 0 -d $(ROOT)/usr/share/man/man1/
-	install -m 755 -o 0 -g 0 freecode-submit.1 $(ROOT)/usr/share/man/man1/freecode-submit.1
+	cp freecode-submit ${DESTDIR}/usr/bin/freecode-submit 
+	install -m 755 -o 0 -g 0 -d ${DESTDIR}/usr/share/man/man1/
+	install -m 755 -o 0 -g 0 freecode-submit.1 ${DESTDIR}/usr/share/man/man1/freecode-submit.1
 
 uninstall:
-	rm -f ${ROOT}/usr/bin/freecode-submit 
-	rm -f ${ROOT}/usr/share/man/man1/freecode-submit.1
+	rm -f ${DESTDIR}/usr/bin/freecode-submit 
+	rm -f ${DESTDIR}/usr/share/man/man1/freecode-submit.1
 
 freecode-submit-$(VERS).tar.gz: $(SOURCES) freecode-submit.1
 	find $(SOURCES) freecode-submit.1 -type f | sed "s:^:freecode-submit-$(VERS)/:" >MANIFEST
