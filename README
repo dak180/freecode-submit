@@ -1,7 +1,7 @@
 			freecode-submit
 
 freecode-submit is a script that supports remote submission of release 
-updates to Freecode via its interface.  It is intended for use
+updates to Freecode via its JSON interface.  It is intended for use
 in project release scripts.
 
 (This project was formerly called freshmeat-submit.  It changed its name
