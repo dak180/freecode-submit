@@ -2,6 +2,8 @@
 
 VERS=$(shell sed <freecode-submit -n -e '/version="\(.*\)"/s//\1/p')
 
+PREFIX=/usr
+
 CODE    = freecode-submit
 DOCS    = README AUTHORS freecode-submit.xml COPYING
 SOURCES = $(CODE) $(DOCS) Makefile control gold-mega.png
@@ -15,13 +17,13 @@ freecode-submit.html: freecode-submit.xml
 	xmlto html-nochunks freecode-submit.xml
 
 install: freecode-submit.1 uninstall
-	cp freecode-submit ${DESTDIR}/usr/bin/freecode-submit 
-	install -m 755 -o 0 -g 0 -d ${DESTDIR}/usr/share/man/man1/
-	install -m 755 -o 0 -g 0 freecode-submit.1 ${DESTDIR}/usr/share/man/man1/freecode-submit.1
+	cp freecode-submit ${PREFIX}/bin/freecode-submit 
+	install -m 755 -o 0 -g 0 -d ${PREFIX}/share/man/man1/
+	install -m 755 -o 0 -g 0 freecode-submit.1 ${PREFIX}/share/man/man1/freecode-submit.1
 
 uninstall:
-	rm -f ${DESTDIR}/usr/bin/freecode-submit 
-	rm -f ${DESTDIR}/usr/share/man/man1/freecode-submit.1
+	rm -f ${PREFIX}/bin/freecode-submit 
+	rm -f ${PREFIX}/share/man/man1/freecode-submit.1
 
 freecode-submit-$(VERS).tar.gz: $(SOURCES) freecode-submit.1
 	find $(SOURCES) freecode-submit.1 -type f | sed "s:^:freecode-submit-$(VERS)/:" >MANIFEST
