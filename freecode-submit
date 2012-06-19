@@ -351,7 +351,12 @@ if __name__ == "__main__":
         # Time to ship the update.
         # Establish session
         session = FreecodeSession(verbose=int(verbose), emit_enable=not dryrun)
-        session.on_project(update.name)
+        try:
+            session.on_project(update.name)
+        except ValueError, e:
+            print e
+            print >>sys.stderr, "Looks like a server-side problem at freecode; bailing out."
+            raise SystemExit, 1
         if options.query:
             print "Project: %s" % session.project_data["name"]
             print "Summary: %s" % session.project_data["oneliner"]
