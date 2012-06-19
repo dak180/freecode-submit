@@ -131,20 +131,20 @@ class FreecodeSession:
                           "POST",
                           {"release": data})
 
-    def withdraw_release(self, version):
+    def withdraw_release(self, dversion):
         "Withdraw a specified release from the current project."
         if self.verbose:
-            print "Withdrawing %s release: %s" % (self.project, version)
+            print "Withdrawing %s release: %s" % (self.project, dversion)
         releases = self.edit_request("projects/%s/releases/pending.json" \
                                      % self.permalink, force=True)
         releases = json.loads(releases)
         for release in releases:
             properties = release["release"]
-            if properties.get("version") == version:
+            if properties.get("version") == dversion:
                 vid = properties["id"]
                 break
         else:
-            raise FreecodeSessionException("couldn't find release %s"%version) 
+            raise FreecodeSessionException("couldn't find release %s"%dversion) 
         deletelink = "projects/%s/releases/%s.json" % (self.permalink, vid)
         self.edit_request(deletelink, "DELETE", {})
 
