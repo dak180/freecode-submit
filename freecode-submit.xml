@@ -133,7 +133,7 @@ corresponding command-line switches:</para>
 
 <row>
 <entry>Project:</entry>      <entry>Project</entry>
-<entry>-p</entry><entry>--project</entry>
+<entry>-P</entry><entry>--project</entry>
 <entry>
 <para>Name of the project (freecode shortname) to operate on. You cannot
 change the project-name attribute with this program; to do that, you
@@ -358,7 +358,7 @@ the general mechanism for pairing URLs with labels.</para>
 
 <para>Earlier versions parsed RPM specfiles. This was poor
 separation of function and has been removed. That responsibility
-belong to the human or program generating the job card.</para>
+belongs to the human or program generating the job card.</para>
 </refsect1>
 
 <refsect1><title>FILES</title>
