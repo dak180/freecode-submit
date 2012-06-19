@@ -59,7 +59,7 @@ class FreecodeSessionException(Exception):
 
 class FreecodeSession:
     "Encapsulate the state of a Freecode API session."
-    server = "http://freecode.com/"
+    server = "https://freecode.com/"
 
     def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freecode session credentials."
