@@ -374,7 +374,7 @@ if __name__ == "__main__":
                 #print handle.info()
                 #print "==="
                 print "%s-URL: %s" % (assoc["label"].replace(" ","-"), assoc["redirector"])
-            if 'recent_releases' in session.project_data:
+            if 'recent_releases' in session.project_data and session.project_data['recent_releases']:
                 most_recent = session.project_data['recent_releases'][0]
                 print "Version: %s" % most_recent['version'] 
                 print "Tag-List: %s" % ",".join(most_recent['tag_list'])
