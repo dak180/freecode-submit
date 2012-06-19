@@ -142,7 +142,6 @@ class FreecodeSession:
             properties = release["release"]
             if properties.get("version") == version:
                 vid = properties["id"]
-                print "I see", properties
                 break
         else:
             raise FreecodeSessionException("couldn't find release %s"%version) 
