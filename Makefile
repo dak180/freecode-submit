@@ -32,7 +32,6 @@ freecode-submit-$(VERS).tar.gz: $(SOURCES) freecode-submit.1
 	(cd ..; rm freecode-submit-$(VERS))
 
 pychecker:
-	@echo "Expect: Object (data) has no attribute (update)"
 	@ln -f freecode-submit freecode-submit.py
 	@-pychecker --only --limit 50 freecode-submit.py
 	@rm -f freecode-submit.py
