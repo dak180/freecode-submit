@@ -354,7 +354,7 @@ if __name__ == "__main__":
             session.on_project(update.name)
         except ValueError, e:
             print e
-            print >>sys.stderr, "Looks like a server-side problem at freecode; bailing out."
+            print >>sys.stderr, "freecode-submit: looks like a server-side problem at freecode; bailing out."
             raise SystemExit, 1
         if options.query:
             print "Project: %s" % session.project_data["name"]
