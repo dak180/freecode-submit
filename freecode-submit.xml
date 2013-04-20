@@ -194,15 +194,6 @@ message on standard input.</para>
 </row>
 
 <row>
-<entry>Release-Focus:</entry><entry>Release</entry>
-<entry>-r</entry><entry>--release-focus</entry>
-<entry>
-<para>Purpose of this release.  See the table of release-focus types 
-below.</para>
-</entry>
-</row>
-
-<row>
 <entry>Release-Tag-List:</entry> <entry>Release</entry>
 <entry>-t</entry><entry>--tag-list</entry>
 <entry>
@@ -283,25 +274,6 @@ which are no longer valid.</para>
 URL fields, when specified, actually change the record for the
 project.  Only the Tag-List, Changes, Version, Release-Focus, and Hide
 fields are actually stored for each version.</para>
-
-<para>Here are the release-focus types.  Either the string or the
-integer is acceptable.  Case of the string is significant.</para>
-
-<informaltable>
-<tgroup cols='2' rowsep='1'>
-<tbody>
-<row><entry>Initial freecode announcement</entry><entry>1</entry></row>
-<row><entry>Documentation</entry><entry>2</entry></row>
-<row><entry>Code cleanup</entry><entry>3</entry></row>
-<row><entry>Minor feature enhancements</entry><entry>4</entry></row>
-<row><entry>Major feature enhancements</entry><entry>5</entry></row>
-<row><entry>Minor bugfixes</entry><entry>6</entry></row>
-<row><entry>Major bugfixes</entry><entry>7</entry></row>
-<row><entry>Minor security fixes</entry><entry>8</entry></row>
-<row><entry>Major security fixes</entry><entry>9</entry></row>
-</tbody>
-</tgroup>
-</informaltable>
 
 <para>The following elements of Freecode project metadata cannot yet
 be modified using this tool: <varname>name</varname>,

@@ -1,5 +1,8 @@
 		freecode-submit project release news
 
+2.5 @ 2013-04-20
+    Remove the obsolete Release-Focus field.
+
 2.4 @ 2012-06-19:
     Freecode JSON connections have changed from http to https.
 

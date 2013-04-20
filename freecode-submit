@@ -4,7 +4,7 @@
 
 import sys, re, urllib2, json, netrc, email.Parser, optparse
 
-version="2.4"
+version="2.5"
 
 class Update:
     "Encapsulate dictionaries describing a project metadata update."
@@ -201,22 +201,7 @@ class FreecodeMetadataFactory:
         ("Changes",          "c", "changelog"),              # Release
         ("Hide",             "x", "hidden_from_frontpage"),  # Release
         ("Release-Tag-List", "t", "tag_list"),               # Release
-        # Note: Release Focus is no longer a real Freecode field.
-        # We remap it below.
-        ("Release-Focus",    "r", "release_focus"),          # Release
         )
-    # Conventional values for release focus
-    focus_values = (
-        "Initial freecode announcement",
-        "Documentation",
-        "Code cleanup",
-        "Minor feature enhancements",
-        "Major feature enhancements",
-        "Minor bugfixes",
-        "Major bugfixes",
-        "Minor security fixes",
-        "Major security fixes",
-    )
     # Which attributes have project scope, all others have release scupe
     projectwide = ('name',
                    'description',
@@ -295,17 +280,6 @@ class FreecodeMetadataFactory:
         # Hidden flag special handling
         if "hidden_from_frontpage" in data:
             data["hidden_from_frontpage"] = data["hidden_from_frontpage"] in ("Y", "y") 
-        # Release-Focus field special handling.
-        if "release_focus" in data:
-            if data["release_focus"] in '123456789':
-                data["release_focus"] = FreecodeMetadataFactory.focus_values[int(data["release_focus"])-1]
-            if data["release_focus"] not in FreecodeMetadataFactory.focus_values:
-                raise FreecodeSessionException("Invalid release focus")
-            if "tag_list" not in data:
-                data["tag_list"] = data["release_focus" ]
-            else:
-                data["tag_list"].append(data["release_focus" ])
-            del data["release_focus"]
         # Now merge in the URLs, doing symbol substitution
         urllist = []
         for (label, furl) in urls.items():
