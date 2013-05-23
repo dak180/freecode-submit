@@ -31,6 +31,9 @@ freecode-submit-$(VERS).tar.gz: $(SOURCES) freecode-submit.1
 	(cd ..; tar -czf freecode-submit/freecode-submit-$(VERS).tar.gz `cat freecode-submit/MANIFEST`)
 	(cd ..; rm freecode-submit-$(VERS))
 
+freecode-submit-$(VERS).md5: freecode-submit-$(VERS).tar.gz
+	@md5sum freecode-submit-$(VERS).tar.gz >freecode-submit-$(VERS).md5
+
 pychecker:
 	@ln -f freecode-submit freecode-submit.py
 	@-pychecker --only --limit 50 freecode-submit.py
@@ -38,8 +41,9 @@ pychecker:
 
 clean:
 	rm -f *.pyc *.html freecode-submit.1 MANIFEST ChangeLog SHIPPER.* *~
+	rm -f *.tar.gz *.md5
 
 dist: freecode-submit-$(VERS).tar.gz
 
-release: freecode-submit-$(VERS).tar.gz freecode-submit.html
+release: freecode-submit-$(VERS).tar.gz freecode-submit-$(VERS).md5 freecode-submit.html
 	shipper -u -m -t; make clean
