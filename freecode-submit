@@ -64,10 +64,10 @@ class FreecodeSession:
     "Encapsulate the state of a Freecode API session."
     server = "https://freecode.com/"
 
-    def __init__(self, auth=None, sverbose=0, emit_enable=True):
+    def __init__(self, auth=None, verbose=0, emit_enable=True):
         "Initialize Freecode session credentials."
         self.auth = auth
-        self.verbose = sverbose
+        self.verbose = verbose
         self.emit_enable = emit_enable
         self.project = None
         self.permalink = None
@@ -243,7 +243,7 @@ class FreecodeMetadataFactory:
         self.argument_parser.add_option('-?', '--showversion', dest='showversion',
                           default=False, action='store_true',
                           help='Show version and quit.')
-    @staticmethod    
+    @staticmethod
     def header_to_field(hdr):
         "Map a header name from the job card format to a field."
         lhdr = hdr.lower().replace("-", "_")
@@ -256,10 +256,10 @@ class FreecodeMetadataFactory:
         "Return an Update object describing project and release attributes."
         data = {}
         urls = {}
-        (loptions, _args) = self.argument_parser.parse_args()
+        (options, _args) = self.argument_parser.parse_args()
         # Stuff from stdin if present
         prior_version = data.get("version")
-        if not (loptions.query or loptions.showversion) and loptions.read:
+        if not (options.query or options.showversion) and options.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 value = re.sub("\n +", " ", value).strip()
@@ -280,11 +280,11 @@ class FreecodeMetadataFactory:
         # they override what's on stdin.
         controls = ('query', 'delete', 'read', 'dryrun', 'verbose', 'showversion')
         prior_version = data.get("version")
-        for (key, value) in loptions.__dict__.items():
+        for (key, value) in options.__dict__.items():
             if key not in controls and value != None:
                 data[key] = value
-                del loptions.__dict__[key]
-        if data.get("version") != prior_version and not loptions.delete:
+                del options.__dict__[key]
+        if data.get("version") != prior_version and not options.delete:
             raise FreecodeSessionException("Version conflict in options.")
         # Hidden flag special handling
         if "hidden_from_frontpage" in data:
@@ -297,24 +297,24 @@ class FreecodeMetadataFactory:
                     furl = furl.replace('${' + k + '}', v)
             urllist.append((label, furl))
         # Sort out what things go where 
-        lupdate = Update()
-        if loptions.showversion:
+        update = Update()
+        if options.showversion:
             pass
-        elif loptions.query:
-            lupdate.name = loptions.query
+        elif options.query:
+            update.name = options.query
         else:
-            lupdate.name = data.pop('name')
-            lupdate.urlassoc = urllist
+            update.name = data.pop('name')
+            update.urlassoc = urllist
             for (k, v) in data.items():
                 if k in FreecodeMetadataFactory.projectwide:
                     # Hack to get around a namespace collision
                     if k == "project_release_tag":
                         k = "release_tag"
-                    lupdate.per_project[k] = v
+                    update.per_project[k] = v
                 else:
-                    lupdate.per_release[k] = v
+                    update.per_release[k] = v
         # Return this
-        return (loptions, lupdate)
+        return (options, update)
 
 if __name__ == "__main__":
     try:
@@ -332,7 +332,7 @@ if __name__ == "__main__":
             raise SystemExit, 0
         # Time to ship the update.
         # Establish session
-        session = FreecodeSession(sverbose=int(verbose), emit_enable=not dryrun)
+        session = FreecodeSession(verbose=int(verbose), emit_enable=not dryrun)
         try:
             session.on_project(update.name)
         except ValueError, e:
