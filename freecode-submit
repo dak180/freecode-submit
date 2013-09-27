@@ -332,7 +332,7 @@ if __name__ == "__main__":
             raise SystemExit, 0
         # Time to ship the update.
         # Establish session
-        session = FreecodeSession(verbose=int(verbose), emit_enable=not dryrun)
+        session = FreecodeSession(sverbose=int(verbose), emit_enable=not dryrun)
         try:
             session.on_project(update.name)
         except ValueError, e:
