@@ -1,6 +1,6 @@
 # Makefile for the freecode-submit tool
 
-VERS=$(shell sed <freecode-submit -n -e '/version="\(.*\)"/s//\1/p')
+VERS=$(shell sed <freecode-submit -n -e '/version *= *"\(.*\)"/s//\1/p')
 
 PREFIX=/usr
 
