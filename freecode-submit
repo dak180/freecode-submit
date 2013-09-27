@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-#
-# freecode-submit -- script transactions with the Freecode server
+"""
+freecode-submit -- script transactions with the Freecode server
+"""
 
 import sys, re, urllib2, json, netrc, email.Parser, optparse
 
-version="2.5"
+version = "2.5"
 
 class Update:
     "Encapsulate dictionaries describing a project metadata update."
@@ -54,19 +55,24 @@ class RequestWithMethod(urllib2.Request):
             return "GET"
 
 class FreecodeSessionException(Exception):
+    "Carry exception state when a session blows up."
     def __init__(self, msg):
+        Exception.__init__(self)
         self.msg = msg
 
 class FreecodeSession:
     "Encapsulate the state of a Freecode API session."
     server = "https://freecode.com/"
 
-    def __init__(self, auth=None, verbose=0, emit_enable=True):
+    def __init__(self, auth=None, sverbose=0, emit_enable=True):
         "Initialize Freecode session credentials."
         self.auth = auth
-        self.verbose = verbose
+        self.verbose = sverbose
         self.emit_enable = emit_enable
         self.project = None
+        self.permalink = None
+        self.id = None
+        self.project_data = None
         # If user didn't supply credentials, fetch from ~/.netrc
         if not self.auth:
             try:
@@ -80,16 +86,16 @@ class FreecodeSession:
             ret = credentials.authenticators("freecode")
             if not ret:
                 raise FreecodeSessionException("no credentials for Freecode")
-            login, self.auth, password = ret
+            _login, self.auth, _password = ret
 
     def on_project(self, name):
         "Select project by Freecode shortname."
         if self.verbose:
             print "Selecting project: %s" % name
         self.project = name
-        query = FreecodeSession.server + "projects/%s.json?auth_code=%s" \
+        pquery = FreecodeSession.server + "projects/%s.json?auth_code=%s" \
                 % (self.project, self.auth)
-        handle = urllib2.urlopen(query)
+        handle = urllib2.urlopen(pquery)
         content = json.loads(handle.read())
         self.project_data = content['project']
         #if self.verbose:
@@ -97,8 +103,10 @@ class FreecodeSession:
         self.permalink = self.project_data['permalink'] 
         self.id = self.project_data['id'] 
 
-    def edit_request(self, url, method="GET", request={}, force=False):
+    def edit_request(self, url, method="GET", request=None, force=False):
         "Wrap a JSON object with the auth code and ship it as a request"
+        if request is None:
+            request = {}
         url = FreecodeSession.server + url
         data = {"auth_code" : self.auth}
         data.update(request)
@@ -126,7 +134,7 @@ class FreecodeSession:
     def publish_release(self, data):
         "Add a new release to the current project."
         if self.verbose:
-            print "Publishing %s release: %s" % (self.project, `data`)
+            print "Publishing %s release: %s" % (self.project, repr(data))
         self.edit_request("projects/" + self.permalink + "/releases.json",
                           "POST",
                           {"release": data})
@@ -161,9 +169,9 @@ class FreecodeSession:
         if self.verbose:
             print "URL list update for %s is: %s" % (self.project, urlassoc)
         # First, get permalinks for all existing URLs
-        query = FreecodeSession.server + "projects/%s/urls.json?auth_code=%s" \
+        uquery = FreecodeSession.server + "projects/%s/urls.json?auth_code=%s" \
                 % (self.permalink, self.auth)
-        handle = urllib2.urlopen(query)
+        handle = urllib2.urlopen(uquery)
         content = json.loads(handle.read())
         permadict = {}
         for item in content:
@@ -235,10 +243,11 @@ class FreecodeMetadataFactory:
         self.argument_parser.add_option('-?', '--showversion', dest='showversion',
                           default=False, action='store_true',
                           help='Show version and quit.')
-        
-    def header_to_field(self, hdr):
+    @staticmethod    
+    def header_to_field(hdr):
+        "Map a header name from the job card format to a field."
         lhdr = hdr.lower().replace("-", "_")
-        for (alias, shortopt, field) in FreecodeMetadataFactory.freecode_field_map:
+        for (alias, _shortopt, field) in FreecodeMetadataFactory.freecode_field_map:
             if lhdr == alias.lower().replace("-", "_").replace("/", "_"):
                 return field
         raise FreecodeSessionException("Illegal field name %s" % hdr)
@@ -247,10 +256,10 @@ class FreecodeMetadataFactory:
         "Return an Update object describing project and release attributes."
         data = {}
         urls = {}
-        (options, args) = self.argument_parser.parse_args()
+        (loptions, _args) = self.argument_parser.parse_args()
         # Stuff from stdin if present
         prior_version = data.get("version")
-        if not (options.query or options.showversion) and options.read:
+        if not (loptions.query or loptions.showversion) and loptions.read:
             message = self.message_parser.parse(stream)
             for (key, value) in message.items():
                 value = re.sub("\n +", " ", value).strip()
@@ -260,7 +269,7 @@ class FreecodeMetadataFactory:
                 else:
                     if key.endswith("List"):
                         value = map(lambda x: x.strip(), value.split())
-                    data.update({self.header_to_field(key) : value})
+                    data.update({FreecodeMetadataFactory.header_to_field(key) : value})
             if not 'changelog' in data:
                 payload = message.get_payload().strip()
                 if payload:
@@ -271,11 +280,11 @@ class FreecodeMetadataFactory:
         # they override what's on stdin.
         controls = ('query', 'delete', 'read', 'dryrun', 'verbose', 'showversion')
         prior_version = data.get("version")
-        for (key, value) in options.__dict__.items():
+        for (key, value) in loptions.__dict__.items():
             if key not in controls and value != None:
                 data[key] = value
-                del options.__dict__[key]
-        if data.get("version") != prior_version and not options.delete:
+                del loptions.__dict__[key]
+        if data.get("version") != prior_version and not loptions.delete:
             raise FreecodeSessionException("Version conflict in options.")
         # Hidden flag special handling
         if "hidden_from_frontpage" in data:
@@ -288,24 +297,24 @@ class FreecodeMetadataFactory:
                     furl = furl.replace('${' + k + '}', v)
             urllist.append((label, furl))
         # Sort out what things go where 
-        update = Update()
-        if options.showversion:
+        lupdate = Update()
+        if loptions.showversion:
             pass
-        elif options.query:
-            update.name = options.query
+        elif loptions.query:
+            lupdate.name = loptions.query
         else:
-            update.name = data.pop('name')
-            update.urlassoc = urllist
+            lupdate.name = data.pop('name')
+            lupdate.urlassoc = urllist
             for (k, v) in data.items():
                 if k in FreecodeMetadataFactory.projectwide:
                     # Hack to get around a namespace collision
                     if k == "project_release_tag":
                         k = "release_tag"
-                    update.per_project[k] = v
+                    lupdate.per_project[k] = v
                 else:
-                    update.per_release[k] = v
+                    lupdate.per_release[k] = v
         # Return this
-        return (options, update)
+        return (loptions, lupdate)
 
 if __name__ == "__main__":
     try:
