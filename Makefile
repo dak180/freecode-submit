@@ -39,7 +39,7 @@ pychecker:
 	@-pychecker --only --limit 50 freecode-submit.py
 	@rm -f freecode-submit.py
 
-PYLINTOPTS = --rcfile=/dev/null --reports=n --include-ids=y --disable="C0103,C0301,C0323,R0903,R0912,R0914,W0141,F0401,E0611,E1101"
+PYLINTOPTS = --rcfile=/dev/null --reports=n --include-ids=y --disable="C0103,C0301,C0323,R0903,R0912,R0914,W0141,W0621,F0401,E0611,E1101"
 pylint:
 	@pylint --output-format=parseable $(PYLINTOPTS) freecode-submit
 
