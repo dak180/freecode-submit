@@ -241,7 +241,7 @@ of how to set frequently-used URL types:</para>
   <entry>Download-URL:</entry>
   <entry>Download</entry>
   <entry>Preferred download URL.  If you specify this, it will be used to 
-  activate the "Download" link anf foppy-disk on the project page.</entry>
+  activate the "Download" link and floppy-disk icon on the project page.</entry>
 </row>
 
 <row>
@@ -272,7 +272,7 @@ which are no longer valid.</para>
 
 <para>The Summary, Description, License-List, Project-Tag-List and all
 URL fields, when specified, actually change the record for the
-project.  Only the Tag-List, Changes, Version, Release-Focus, and Hide
+project.  Only the Tag-List, Changes, Version, and Hide
 fields are actually stored for each version.</para>
 
 <para>The following elements of Freecode project metadata cannot yet
@@ -294,7 +294,6 @@ fed to <application>freecode-submit</application> on standard input:</para>
 <programlisting>
 Project: doclifter
 Version: 1.1
-Release-Focus: Major feature enhancements
 Hide: N
 Website-URL: http://www.catb.org/~esr/doclifter/
 Tar/GZ-URL: http://www.catb.org/~esr/doclifter/doclifter-${version}.tar.gz
