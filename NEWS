@@ -1,5 +1,8 @@
 		freecode-submit project release news
 
+2.6 @ 2013-09-27
+    Automatically generate an md5 file when shipping this code.
+
 2.5 @ 2013-04-20
     Remove the obsolete Release-Focus field.
 
