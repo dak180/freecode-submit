@@ -318,8 +318,7 @@ compatibility, the data model has changed in significant ways.</para>
 
 <para>There is no longer a Branch attribute.</para>
 
-<para>The old Release-Focus field is gone.  As a special case, this
-pragram will validate it and use it to fill in the project tags list.</para>
+<para>The old Release-Focus field is gone.</para>
 
 <para>The old License field is now License-List and can take a
 comma-separated list of licenses.</para>
