@@ -44,10 +44,10 @@ pylint:
 	@pylint --output-format=parseable $(PYLINTOPTS) freecode-submit
 
 clean:
-	rm -f *.pyc *.html freecode-submit.1 MANIFEST ChangeLog SHIPPER.* *~
+	rm -f *.pyc *.html freecode-submit.1 MANIFEST ChangeLog *~
 	rm -f *.tar.gz *.md5
 
 dist: freecode-submit-$(VERS).tar.gz
 
 release: freecode-submit-$(VERS).tar.gz freecode-submit-$(VERS).md5 freecode-submit.html
-	shipper -u -m -t; make clean
+	shipper version=$(VERS) | sh -e -x
