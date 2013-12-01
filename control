@@ -15,8 +15,12 @@ XBS-Destinations: freecode
 
 Homepage: http://www.catb.org/~esr/freecode-submit
 
+XBS-HTML-Template: index.html
+
 Gitorious-URL: https://gitorious.org/freecode-submit
 
 XBS-Logo: gold-mega.png
 
-XBS-Project-Tag-List: freecode, json
+XBS-Freecode-Tags: freecode, json
+
+XBS-VC-Tag-Template: %(version)s
