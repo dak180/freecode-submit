@@ -284,7 +284,7 @@ class FreecodeMetadataFactory:
             if key not in controls and value != None:
                 data[key] = value
                 del options.__dict__[key]
-        if data.get("version") != prior_version and not options.delete:
+        if prior_version and data.get("version") != prior_version and not options.delete:
             raise FreecodeSessionException("Version conflict in options.")
         # Hidden flag special handling
         if "hidden_from_frontpage" in data:
