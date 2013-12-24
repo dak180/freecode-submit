@@ -5,7 +5,7 @@ freecode-submit -- script transactions with the Freecode server
 
 import sys, re, urllib2, json, netrc, email.Parser, optparse
 
-version = "2.6"
+version = "2.7"
 
 class Update:
     "Encapsulate dictionaries describing a project metadata update."
